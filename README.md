@@ -76,6 +76,9 @@ const YOUR_TEXT: &str = "Hello from **markdown** and <b>HTML</b>!";
 </details>
 <br>
 
+**Note:** Markdown support is optional and you can disable the `markdown`
+feature to have more lightweight, HTML-only support.
+
 ## How does this work
 
 - Markdown (if present) is converted to HTML using `comrak`.

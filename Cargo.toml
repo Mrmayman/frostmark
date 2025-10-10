@@ -13,7 +13,22 @@ categories = ["gui"]
 
 [dependencies]
 iced = { version = "0.13", default-features = false, features = ["wgpu", "tiny-skia", "advanced"] }
-comrak = { version = "0.41", default-features = false }
 html5ever = "0.27"
 markup5ever_rcdom = "0.3"
 bitflags = "2"
+
+comrak = { version = "0.41", default-features = false, optional = true }
+
+[features]
+default = ["markdown"]
+markdown = ["comrak"]
+
+[[example]]
+name = "hello"
+path = "examples/hello.rs"
+required-features = ["markdown"]
+
+[[example]]
+name = "live_edit"
+path = "examples/live_edit.rs"
+required-features = ["markdown"]

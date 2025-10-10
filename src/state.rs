@@ -65,6 +65,7 @@ impl MarkState {
     /// it may introduce formatting bugs when
     /// dealing with pure HTML documents.
     #[must_use]
+    #[cfg(feature = "markdown")]
     pub fn with_html_and_markdown(input: &str) -> Self {
         let html = comrak::markdown_to_html(
             input,
