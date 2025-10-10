@@ -78,9 +78,16 @@ impl<
         let attrs = attrs.borrow();
 
         match name.as_str() {
-            // TODO: Don't trim whitespace in pre
-            "center" | "kbd" | "span" | "html" | "body" | "p" | "div" | "pre" => {
+            "center" | "kbd" | "span" | "html" | "body" | "p" | "div" => {
                 draw_children!(self, node, element, data);
+            }
+            "pre" => {
+                draw_children!(
+                    self,
+                    node,
+                    element,
+                    data.insert(ChildDataFlags::KEEP_WHITESPACE)
+                );
             }
             "details" | "summary" | "h1" => {
                 draw_children!(self, node, element, data.heading(1));
