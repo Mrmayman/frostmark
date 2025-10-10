@@ -1,5 +1,6 @@
 use std::ops::Add;
 
+use bitflags::bitflags;
 use html5ever::{parse_document, tendril::TendrilSink, ParseOpts};
 use iced::{advanced, widget, Element};
 use markup5ever_rcdom::RcDom;
@@ -7,9 +8,7 @@ use markup5ever_rcdom::RcDom;
 #[derive(Debug, Default, Clone, Copy)]
 pub struct ChildData {
     pub heading_weight: u16,
-    pub indent: bool,
-    pub bold: bool,
-    pub monospace: bool,
+    pub flags: ChildDataFlags,
 
     pub li_ordered_number: Option<usize>,
 }
@@ -20,8 +19,8 @@ impl ChildData {
         self
     }
 
-    pub fn indent(mut self) -> Self {
-        self.indent = true;
+    pub fn insert(mut self, flags: ChildDataFlags) -> Self {
+        self.flags.insert(flags);
         self
     }
 
@@ -29,15 +28,18 @@ impl ChildData {
         self.li_ordered_number = Some(1);
         self
     }
+}
 
-    pub fn monospace(mut self) -> Self {
-        self.monospace = true;
-        self
-    }
-
-    pub fn bold(mut self) -> Self {
-        self.bold = true;
-        self
+bitflags! {
+    #[derive(Debug, Clone, Copy, Default)]
+    pub struct ChildDataFlags: u16 {
+        const BOLD = 1 << 0;
+        const ITALIC = 1 << 1;
+        const UNDERLINE = 1 << 2;
+        const STRIKETHROUGH = 1 << 3;
+        const INDENT = 1 << 4;
+        const KEEP_WHITESPACE = 1 << 5;
+        const MONOSPACE = 1 << 6;
     }
 }
 

@@ -2,7 +2,7 @@ use iced::{widget, Element};
 use markup5ever_rcdom::Node;
 
 use crate::{
-    structs::{MarkWidget, RenderedSpan},
+    structs::{ChildDataFlags, MarkWidget, RenderedSpan},
     widgets::{codeblock, link, link_text},
 };
 
@@ -36,14 +36,15 @@ impl<
                 let weight = data.heading_weight;
                 let size = if weight > 0 { 36 - (weight * 4) } else { 16 };
 
-                *element = if data.monospace {
+                *element = if data.flags.contains(ChildDataFlags::MONOSPACE) {
                     codeblock(&text, size, self.fn_copying_text.as_ref(), self.font_mono).into()
                 } else {
                     let t = widget::span(clean_whitespace(&text)).size(size);
 
-                    RenderedSpan::Spans(vec![if let (true, Some(f)) =
-                        (data.bold, self.font_bold.or(self.font_mono).or(self.font))
-                    {
+                    RenderedSpan::Spans(vec![if let (true, Some(f)) = (
+                        data.flags.contains(ChildDataFlags::BOLD),
+                        self.font_bold.or(self.font_mono).or(self.font),
+                    ) {
                         t.font(f)
                     } else {
                         t
@@ -98,7 +99,7 @@ impl<
                 .into();
             }
             "b" | "strong" | "em" | "i" => {
-                draw_children!(self, node, element, data.bold());
+                draw_children!(self, node, element, data.insert(ChildDataFlags::BOLD));
             }
             "a" => {
                 self.draw_link(node, element, &attrs, data);
@@ -109,18 +110,23 @@ impl<
                 self.draw_image(element, &attrs);
             }
             "code" => {
-                draw_children!(self, node, element, data.monospace());
+                draw_children!(self, node, element, data.insert(ChildDataFlags::MONOSPACE));
             }
             "hr" => {
                 *element = widget::horizontal_rule(4.0).into();
             }
             "ul" => {
-                let mut data = data.indent();
+                let mut data = data.insert(ChildDataFlags::INDENT);
                 data.li_ordered_number = None;
                 draw_children!(self, node, element, data);
             }
             "ol" => {
-                draw_children!(self, node, element, data.indent().ordered());
+                draw_children!(
+                    self,
+                    node,
+                    element,
+                    data.insert(ChildDataFlags::INDENT).ordered()
+                );
             }
             "li" => {
                 let bullet = if let Some(num) = data.li_ordered_number {
