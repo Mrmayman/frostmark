@@ -95,7 +95,7 @@ fn main() {
 
 // const DEFAULT: &str = "Type your <b>HTML</b> or *Markdown* here!";
 
-const DEFAULT: &str = r"
+const DEFAULT: &str = r#"
 <h1>Hello from HTML</h1>
 <p>Here's a paragraph. It should appear on its own line.</p>
 <div>Here's a div. It should also appear on a new line.</div><br>
@@ -105,7 +105,7 @@ Here's<b> bold text, </b>and
 
 # Hello from Markdown
 
-As Sonic the Hedgehog once said,
+As `Sonic the Hedgehog` once said,
 > The problem with being faster than light
 > is that you live in darkness
 
@@ -113,4 +113,11 @@ Anyway here's a basic list:
 1. Chilli
 2. Pepper
 3. Sauce
-";
+
+```
+// Code block support
+fn main() {
+    println!("Hello, World!");
+}
+```
+"#;
