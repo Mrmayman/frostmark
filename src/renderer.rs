@@ -2,7 +2,7 @@ use iced::{widget, Element, Font};
 use markup5ever_rcdom::Node;
 
 use crate::{
-    structs::{ChildDataFlags, MarkWidget, RenderedSpan},
+    structs::{ChildDataFlags, ImageInfo, MarkWidget, RenderedSpan},
     widgets::{link, link_text},
 };
 
@@ -21,6 +21,7 @@ impl<
             + widget::text::Catalog
             + widget::rule::Catalog
             + widget::text_editor::Catalog
+            + widget::checkbox::Catalog
             + 'a,
     > MarkWidget<'a, M, T>
 {
@@ -185,18 +186,13 @@ impl<
 
     fn draw_image(&self, element: &mut RenderedSpan<'a, M, T>, attrs: &[html5ever::Attribute]) {
         if let Some(attr) = attrs.iter().find(|attr| &*attr.name.local == "src") {
-            let url = attr.value.to_string();
+            let url = &*attr.value;
 
-            let size = attrs
-                .iter()
-                .find(|attr| {
-                    let name = &*attr.name.local;
-                    name == "width" || name == "height"
-                })
-                .and_then(|n| n.value.parse::<f32>().ok());
+            let width = get_attr_num(attrs, "width");
+            let height = get_attr_num(attrs, "height");
 
-            if let Some(func) = self.fn_drawing_image.as_ref() {
-                *element = func(&url, size).into();
+            if let Some(func) = self.fn_drawing_image.as_deref() {
+                *element = func(ImageInfo { url, width, height }).into();
             }
         } else {
             // Error, malformed image
@@ -327,6 +323,20 @@ impl<
     }
 }
 
+fn get_attr_num(attrs: &[html5ever::Attribute], attr_name: &str) -> Option<f32> {
+    get_attr(attrs, attr_name).and_then(|n| n.parse::<f32>().ok())
+}
+
+fn get_attr<'a>(attrs: &'a [html5ever::Attribute], attr_name: &str) -> Option<&'a str> {
+    attrs
+        .iter()
+        .find(|attr| {
+            let name = &*attr.name.local;
+            name == attr_name
+        })
+        .map(|n| &*n.value)
+}
+
 fn is_node_useless(node: &Node) -> bool {
     if let markup5ever_rcdom::NodeData::Text { contents } = &node.data {
         let contents = contents.borrow();
@@ -390,6 +400,7 @@ impl<
             + widget::text::Catalog
             + widget::rule::Catalog
             + widget::text_editor::Catalog
+            + widget::checkbox::Catalog
             + 'a,
     > From<MarkWidget<'a, M, T>> for Element<'a, M, T>
 {

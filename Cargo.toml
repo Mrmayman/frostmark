@@ -19,16 +19,31 @@ bitflags = "2"
 
 comrak = { version = "0.41", default-features = false, optional = true }
 
+[dev-dependencies]
+tokio = "1"
+reqwest = { version = "0.12", default-features = false, features = [
+    "rustls-tls",
+    # Default features
+    "charset",
+    "http2",
+] }
+
 [features]
 default = ["markdown"]
 markdown = ["comrak"]
 
 [[example]]
 name = "hello"
-path = "examples/hello.rs"
 required-features = ["markdown"]
 
 [[example]]
 name = "live_edit"
-path = "examples/live_edit.rs"
 required-features = ["markdown"]
+
+[[example]]
+name = "image"
+required-features = ["markdown", "iced/image", "iced/tokio"]
+
+[[example]]
+name = "large_readme"
+required-features = ["markdown", "iced/image", "iced/tokio", "iced/svg"]

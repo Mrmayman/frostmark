@@ -43,7 +43,7 @@ bitflags! {
 }
 
 type FClickLink<M> = Box<dyn Fn(&str) -> M>;
-type FDrawImage<'a, M, T> = Box<dyn Fn(&str, Option<f32>) -> Element<'a, M, T>>;
+type FDrawImage<'a, M, T> = Box<dyn Fn(ImageInfo) -> Element<'static, M, T> + 'a>;
 type FUpdate<M> = Arc<dyn Fn() -> M>;
 
 /// The widget to be constructed every frame.
@@ -166,7 +166,7 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     #[must_use]
     pub fn on_drawing_image(
         mut self,
-        f: impl Fn(&str, Option<f32>) -> Element<'a, M, T> + 'static,
+        f: impl Fn(ImageInfo) -> Element<'static, M, T> + 'a,
     ) -> Self {
         self.fn_drawing_image = Some(Box::new(f));
         self
@@ -215,9 +215,11 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     }
 }
 
+#[derive(Default)]
 pub enum RenderedSpan<'a, M, T> {
     Spans(Vec<widget::text::Span<'a, M, Font>>),
     Elem(Element<'a, M, T>, Emp),
+    #[default]
     None,
 }
 
@@ -336,4 +338,13 @@ impl Emp {
     pub fn has_something(self) -> bool {
         !self.is_empty()
     }
+}
+
+/// Information about the image to help you render it
+/// in [`MarkWidget::on_drawing_image`].
+#[non_exhaustive]
+pub struct ImageInfo<'a> {
+    pub url: &'a str,
+    pub width: Option<f32>,
+    pub height: Option<f32>,
 }

@@ -4,7 +4,7 @@
 
 Render rich text in your `iced` app at lightning-fast speeds using plain HTML or Markdown!
 
-![Demo showing HTML and Markdown together](./frostmark.png)
+![Demo showing HTML and Markdown together](./examples/assets/live_edit.png)
 
 ---
 
@@ -29,7 +29,7 @@ iced::widget::container( // just an example
 
 ## Example
 
-You can find runnable examples in [`examples/`](examples/)
+You can find runnable examples [here](examples/README.md)
 
 <details>
 <summary>Click to expand a fully fledged code example</summary>
