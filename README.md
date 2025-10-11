@@ -92,10 +92,9 @@ Rendering happens right inside `impl Into<Element> for MarkWidget`.
 
 ## Roadmap
 
-- More examples (images, links, text copying)
 - Better widget styling options.
 - Quick “render and cache” API
-- Support for sub/superscript
+- Support for more elements (eg: superscript)
 - Ensure stability, and publish on [crates.io](https://crates.io/)
 
 # Contributing

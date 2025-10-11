@@ -1,26 +1,46 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt::Display,
+};
 
 use frostmark::{MarkState, MarkWidget};
 use iced::{
     widget::{self, image, svg},
-    Element, Task,
+    Alignment, Element, Task,
 };
 
 use crate::image_loader::Image;
 
-const TEXT: &str = include_str!("assets/QL_README.md");
-
 #[path = "shared/image_loader.rs"]
 mod image_loader;
+
+fn main() {
+    iced::application("Large Readme", App::update, App::view)
+        .run_with(|| {
+            let page = Page::TestSuite;
+            let mut app = App {
+                page,
+                state: MarkState::with_html_and_markdown(page.get_contents()),
+                images_normal: HashMap::new(),
+                images_svg: HashMap::new(),
+                images_in_progress: HashSet::new(),
+            };
+            let t = app.download_images();
+            (app, t)
+        })
+        .unwrap();
+}
 
 #[derive(Debug, Clone)]
 enum Message {
     UpdateState,
     OpenLink(String),
+    ChangePage(Page),
     ImageDownloaded(Result<Image, String>),
 }
 
 struct App {
+    page: Page,
     state: MarkState,
     images_normal: HashMap<String, image::Handle>,
     images_svg: HashMap<String, svg::Handle>,
@@ -33,6 +53,10 @@ impl App {
             Message::UpdateState => self.state.update(),
             Message::OpenLink(link) => {
                 _ = open::that(&link);
+            }
+            Message::ChangePage(page) => {
+                self.page = page;
+                return self.reload();
             }
             Message::ImageDownloaded(res) => match res {
                 Ok(image) => {
@@ -52,39 +76,56 @@ impl App {
         Task::none()
     }
 
-    fn view(&self) -> Element<'_, Message> {
+    fn view<'a>(&'a self) -> Element<'a, Message> {
+        let page_selector = widget::row![
+            "Page:",
+            widget::pick_list(Page::ALL, Some(self.page), |s| Message::ChangePage(s))
+        ]
+        .align_y(Alignment::Center)
+        .spacing(10);
+
         widget::scrollable(
-            widget::container(
+            widget::column![
+                page_selector,
+                widget::horizontal_rule(2),
                 MarkWidget::new(&self.state)
                     .on_updating_state(|| Message::UpdateState)
                     .on_clicking_link(Message::OpenLink)
-                    .on_drawing_image(|info| {
-                        if let Some(image) = self.images_normal.get(info.url).cloned() {
-                            let mut img = widget::image(image);
-                            if let Some(w) = info.width {
-                                img = img.width(w);
-                            }
-                            if let Some(h) = info.height {
-                                img = img.height(h);
-                            }
-                            img.into()
-                        } else if let Some(image) = self.images_svg.get(info.url).cloned() {
-                            let mut img = widget::svg(image);
-                            if let Some(w) = info.width {
-                                img = img.width(w);
-                            }
-                            if let Some(h) = info.height {
-                                img = img.height(h);
-                            }
-                            img.into()
-                        } else {
-                            "...".into()
-                        }
-                    }),
-            )
+                    .on_drawing_image(|info| self.draw_image(info)),
+            ]
+            .spacing(10)
             .padding(10),
         )
         .into()
+    }
+
+    fn reload(&mut self) -> Task<Message> {
+        self.state = MarkState::with_html_and_markdown(self.page.get_contents());
+        self.download_images()
+    }
+
+    fn draw_image(&self, info: frostmark::ImageInfo) -> Element<'static, Message> {
+        if let Some(image) = self.images_normal.get(info.url).cloned() {
+            let mut img = widget::image(image);
+            if let Some(w) = info.width {
+                img = img.width(w);
+            }
+            if let Some(h) = info.height {
+                img = img.height(h);
+            }
+            img.into()
+        } else if let Some(image) = self.images_svg.get(info.url).cloned() {
+            let mut img = widget::svg(image);
+            if let Some(w) = info.width {
+                img = img.width(w);
+            }
+            if let Some(h) = info.height {
+                img = img.height(h);
+            }
+            img.into()
+        } else {
+            "...".into()
+        }
     }
 
     fn download_images(&mut self) -> Task<Message> {
@@ -98,17 +139,32 @@ impl App {
     }
 }
 
-fn main() {
-    iced::application("Large Readme", App::update, App::view)
-        .run_with(|| {
-            let mut app = App {
-                state: MarkState::with_html_and_markdown(TEXT),
-                images_normal: HashMap::new(),
-                images_svg: HashMap::new(),
-                images_in_progress: HashSet::new(),
-            };
-            let t = app.download_images();
-            (app, t)
-        })
-        .unwrap();
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum Page {
+    TestSuite,
+    QuantumLauncher,
+}
+
+impl Page {
+    const ALL: [Self; 2] = [Self::TestSuite, Self::QuantumLauncher];
+
+    fn get_contents(&self) -> &'static str {
+        match self {
+            Page::TestSuite => include_str!("assets/TEST.md"),
+            Page::QuantumLauncher => include_str!("assets/QL_README.md"),
+        }
+    }
+}
+
+impl Display for Page {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                Page::TestSuite => "Test Suite",
+                Page::QuantumLauncher => "QuantumLauncher",
+            }
+        )
+    }
 }

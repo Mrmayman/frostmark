@@ -25,7 +25,8 @@ cargo run --example live_edit
 
 # Image
 
-Showcases basic rendering of images.
+A more advanced version of **"Live Edit"**
+which also showcases basic rendering of images.
 
 > Note: This doesn't deal with SVG images,
 > for that, see the **Large Readme** example.
