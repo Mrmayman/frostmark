@@ -20,6 +20,7 @@ bitflags = "2"
 comrak = { version = "0.41", default-features = false, optional = true }
 
 [dev-dependencies]
+open = "5"
 tokio = "1"
 reqwest = { version = "0.12", default-features = false, features = [
     "rustls-tls",

@@ -8,6 +8,8 @@ Some examples to show off functionality and act as a reference.
 cargo run --example hello
 ```
 
+---
+
 # Live Editing
 
 Editing the document through a text editor,
@@ -19,6 +21,8 @@ with a live preview of the result.
 cargo run --example live_edit
 ```
 
+---
+
 # Image
 
 Showcases basic rendering of images.
@@ -26,14 +30,23 @@ Showcases basic rendering of images.
 > Note: This doesn't deal with SVG images,
 > for that, see the **Large Readme** example.
 
+![](assets/image.png)
+
 ```sh
 cargo run --example image --features="iced/image iced/tokio"
 ```
 
+---
+
 # Large Readme
 
 Renders the README of a large project ([QuantumLauncher](https://github.com/Mrmayman/quantumlauncher))
-with this library, also demonstrates SVG image rendering.
+with this library.
+
+Demonstrates:
+- Async image loading
+- SVG rendering
+- Handling link clicks
 
 Side-by-side comparison with frostmark (left) and VSCode (right):
 

@@ -252,9 +252,13 @@ impl<
 
             let msg = self.fn_clicking_link.as_ref();
             if children_empty {
-                RenderedSpan::Spans(vec![link_text(widget::span(url.clone()), &url, msg)])
+                RenderedSpan::Spans(vec![link_text(widget::span(url.clone()), url, msg)])
             } else if let RenderedSpan::Spans(n) = children {
-                RenderedSpan::Spans(n.into_iter().map(|n| link_text(n, &url, msg)).collect())
+                RenderedSpan::Spans(
+                    n.into_iter()
+                        .map(|n| link_text(n, url.clone(), msg))
+                        .collect(),
+                )
             } else {
                 link(children.render(), &url, msg).into()
             }
@@ -270,7 +274,7 @@ impl<
         };
     }
 
-    fn e(_: &str) -> M {
+    fn e(_: String) -> M {
         // This will never run, don't worry
         panic!()
     }

@@ -9,6 +9,16 @@ use iced::{
 
 use crate::image_loader::Image;
 
+const TEXT: &str = r"Put some *image links* here. For example:
+
+![](https://github.com/Mrmayman/quantumlauncher/raw/main/assets/icon/ql_logo.png)
+
+> Note: For SVG support check the `large_readme` example
+
+---
+
+";
+
 #[path = "shared/image_loader.rs"]
 mod image_loader;
 
@@ -115,8 +125,8 @@ fn main() {
     iced::application("Image Loading", App::update, App::view)
         .run_with(|| {
             let mut app = App {
-                editor: Content::with_text(DEFAULT),
-                state: MarkState::with_html_and_markdown(DEFAULT),
+                editor: Content::with_text(TEXT),
+                state: MarkState::with_html_and_markdown(TEXT),
                 images: HashMap::new(),
                 images_in_progress: HashSet::new(),
             };
@@ -125,15 +135,3 @@ fn main() {
         })
         .unwrap();
 }
-
-// const DEFAULT: &str = "Type your <b>HTML</b> or *Markdown* here!";
-
-const DEFAULT: &str = r"Put some *image links* here. For example:
-
-![](https://github.com/Mrmayman/quantumlauncher/raw/main/assets/icon/ql_logo.png)
-
-> Note: For SVG support check the `large_readme` example
-
----
-
-";

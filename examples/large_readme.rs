@@ -8,12 +8,15 @@ use iced::{
 
 use crate::image_loader::Image;
 
+const TEXT: &str = include_str!("assets/QL_README.md");
+
 #[path = "shared/image_loader.rs"]
 mod image_loader;
 
 #[derive(Debug, Clone)]
 enum Message {
     UpdateState,
+    OpenLink(String),
     ImageDownloaded(Result<Image, String>),
 }
 
@@ -28,6 +31,9 @@ impl App {
     fn update(&mut self, msg: Message) -> Task<Message> {
         match msg {
             Message::UpdateState => self.state.update(),
+            Message::OpenLink(link) => {
+                _ = open::that(&link);
+            }
             Message::ImageDownloaded(res) => match res {
                 Ok(image) => {
                     if image.is_svg {
@@ -51,6 +57,7 @@ impl App {
             widget::container(
                 MarkWidget::new(&self.state)
                     .on_updating_state(|| Message::UpdateState)
+                    .on_clicking_link(Message::OpenLink)
                     .on_drawing_image(|info| {
                         if let Some(image) = self.images_normal.get(info.url).cloned() {
                             let mut img = widget::image(image);
@@ -95,7 +102,7 @@ fn main() {
     iced::application("Large Readme", App::update, App::view)
         .run_with(|| {
             let mut app = App {
-                state: MarkState::with_html_and_markdown(YOUR_TEXT),
+                state: MarkState::with_html_and_markdown(TEXT),
                 images_normal: HashMap::new(),
                 images_svg: HashMap::new(),
                 images_in_progress: HashSet::new(),
@@ -105,5 +112,3 @@ fn main() {
         })
         .unwrap();
 }
-
-const YOUR_TEXT: &str = include_str!("assets/QL_README.md");

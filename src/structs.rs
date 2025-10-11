@@ -58,7 +58,7 @@ bitflags! {
     }
 }
 
-type FClickLink<M> = Box<dyn Fn(&str) -> M>;
+type FClickLink<M> = Box<dyn Fn(String) -> M>;
 type FDrawImage<'a, M, T> = Box<dyn Fn(ImageInfo) -> Element<'static, M, T> + 'a>;
 type FUpdate<M> = Arc<dyn Fn() -> M>;
 
@@ -139,7 +139,7 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     /// # ; } }
     /// ```
     #[must_use]
-    pub fn on_clicking_link(mut self, f: impl Fn(&str) -> M + 'static) -> Self {
+    pub fn on_clicking_link(mut self, f: impl Fn(String) -> M + 'static) -> Self {
         self.fn_clicking_link = Some(Box::new(f));
         self
     }

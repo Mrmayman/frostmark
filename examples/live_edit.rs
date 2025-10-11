@@ -93,8 +93,6 @@ fn main() {
         .unwrap();
 }
 
-// const DEFAULT: &str = "Type your <b>HTML</b> or *Markdown* here!";
-
 const DEFAULT: &str = r#"
 <h1>Hello from HTML</h1>
 <p>Here's a paragraph. It should appear on its own line.</p>
