@@ -90,6 +90,14 @@ feature to have more lightweight, HTML-only support.
 
 Rendering happens right inside `impl Into<Element> for MarkWidget`.
 
+## Crate Features
+
+- `markdown` ✅: Adds markdown support alongside HTML
+- `iced-tiny-skia` ✅: Enables iced `tiny-skia` rendering backend
+- `iced-wgpu` ✅: Enables iced `wgpu` rendering backend
+
+> ✅: enabled by default
+
 ## Roadmap
 
 - Better widget styling options.

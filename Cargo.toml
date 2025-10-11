@@ -12,7 +12,7 @@ keywords = ["gui", "iced", "markdown", "html", "renderer"]
 categories = ["gui"]
 
 [dependencies]
-iced = { version = "0.13", default-features = false, features = ["wgpu", "tiny-skia", "advanced"] }
+iced = { version = "0.13", default-features = false, features = ["advanced"] }
 html5ever = "0.27"
 markup5ever_rcdom = "0.3"
 bitflags = "2"
@@ -30,8 +30,10 @@ reqwest = { version = "0.12", default-features = false, features = [
 ] }
 
 [features]
-default = ["markdown"]
+default = ["markdown", "iced-wgpu", "iced-tiny-skia"]
 markdown = ["comrak"]
+iced-wgpu = ["iced/wgpu"]
+iced-tiny-skia = ["iced/tiny-skia"]
 
 [[example]]
 name = "hello"
