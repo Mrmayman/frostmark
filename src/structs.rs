@@ -37,11 +37,11 @@ pub enum ChildAlignment {
     Right,
 }
 
-impl Into<iced::Alignment> for ChildAlignment {
-    fn into(self) -> iced::Alignment {
-        match self {
-            ChildAlignment::Center => iced::Alignment::Center,
-            ChildAlignment::Right => iced::Alignment::End,
+impl From<ChildAlignment> for iced::Alignment {
+    fn from(val: ChildAlignment) -> Self {
+        match val {
+            ChildAlignment::Center => Self::Center,
+            ChildAlignment::Right => Self::End,
         }
     }
 }
@@ -135,7 +135,7 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     /// # struct E {mark_state: MarkState} impl E { fn e(&self) {
     /// # let m: MarkWidget<'_, Message> =
     /// MarkWidget::new(&self.mark_state)
-    ///     .on_clicking_link(|url| Message::OpenLink(url.to_owned()))
+    ///     .on_clicking_link(|url| Message::OpenLink(url))
     /// # ; } }
     /// ```
     #[must_use]
@@ -148,15 +148,17 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     ///
     /// ```ignore
     /// MarkWidget::new(&self.mark_state)
-    ///     .on_drawing_image(|url, size| {
+    ///     .on_drawing_image(|info| {
     ///         // Pseudocode example to give you an idea
-    ///         if let Some(image) = self.cache.get(url) {
-    ///             let i = iced::widget::image(image.clone());
-    ///             if let Some(size) = size {
-    ///                 i.width(size)
-    ///             } else {
-    ///                 i
-    ///             }.into()
+    ///         if let Some(image) = self.cache.get(info.url) {
+    ///             let mut i = iced::widget::image(image.clone());
+    ///             if let Some(width) = info.width {
+    ///                 i = i.width(width);
+    ///             }
+    ///             if let Some(height) = info.height {
+    ///                 i = i.height(height);
+    ///             }
+    ///             i.into()
     ///         } else {
     ///             widget::Column::new().into()
     ///         }
@@ -171,12 +173,17 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     /// or maybe a placeholder if no image is found.
     ///
     /// # Notes:
+    /// - The returned `Element` **must** be `'static`.
+    ///   - If you're calling helper functions inside this,
+    ///     make sure to annotate them with `Element<'static, ...>`
+    ///   - Clone your `Handle` every frame. Don't return anything
+    ///     referencing your app struct.
     /// - **Image URL List**: To get a list of image URLs in the document,
-    ///   use [MarkState::find_image_links].
+    ///   use [`MarkState::find_image_links`].
     /// - **Custom Downloader**: You’ll need to implement your own
-    ///   downloader and use the [image](https://crates.io/crates/image) crate
-    ///   to parse the image and store it as an `iced::widget::image::Handle`.
-    /// - **No Built-in Support**: Frostmark does not provide built-in
+    ///   downloader and load it with `iced::widget::image::Handle::from_bytes`
+    ///   (or the SVG equivalent).
+    /// - **Why?**: Frostmark does not provide built-in
     ///   HTTP client functionality or async runtimes for image downloading,
     ///   as these are out of scope. The app must handle these responsibilities.
     #[must_use]

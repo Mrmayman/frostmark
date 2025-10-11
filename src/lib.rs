@@ -6,4 +6,4 @@ mod structs;
 mod widgets;
 
 pub use state::MarkState;
-pub use structs::MarkWidget;
+pub use structs::{ImageInfo, MarkWidget};

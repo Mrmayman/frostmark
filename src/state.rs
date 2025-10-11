@@ -115,9 +115,10 @@ impl MarkState {
     ///
     /// This method gathers all image URLs in the document, which you can:
     /// 1. Download somehow (pass to an async downloader maybe?)
-    /// 2. Parse using the [image](https://crates.io/crates/image) crate
-    /// 3. Store as `iced::widget::image::Handle`.
-    /// 4. Handle the rendering of these images via [`crate::MarkWidget::on_drawing_image`].
+    /// 2. Store using, if SVG image, `iced::widget::svg::Handle::from_memory`.
+    ///    - For normal images: `iced::widget::image::Handle::from_bytes`.
+    /// 3. Handle the rendering of these images via [`crate::MarkWidget::on_drawing_image`].
+    #[must_use]
     pub fn find_image_links(&self) -> HashSet<String> {
         let mut storage = HashSet::new();
         find_image_links(&self.dom.document, &mut storage);
