@@ -64,23 +64,7 @@ bitflags! {
 
 /// The message that's sent when a widget is updated.
 ///
-/// ```ignore
-/// enum Message {
-///     UpdateState,
-///     UpdateState(frostmark::UpdateMsg),
-///     // ...
-/// }
-///
-/// // in view function
-/// MarkWidget::new(&state)
-///     .on_updating_state(|action| Message::UpdateState(action))
-///
-/// // in update function
-/// match message {
-///     Message::UpdateState(action) => self.state.update(action),
-///     // ...
-/// }
-/// ```
+/// See [`MarkWidget::on_updating_state`] for more info.
 #[derive(Debug, Clone)]
 pub struct UpdateMsg {
     pub(crate) kind: UpdateMsgKind,
@@ -241,22 +225,23 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     /// in your `update()` function to apply the changes.
     ///
     /// ```no_run
-    /// # use frostmark::{MarkWidget, MarkState};
+    /// use frostmark::{MarkWidget, MarkState, UpdateMsg};
+    ///
     /// struct App { mark_state: MarkState }
     /// #[derive(Clone)]
-    /// enum Message { UpdateDocument }
+    /// enum Message { UpdateDocument(UpdateMsg) }
     ///
     /// impl App {
     ///     fn view(&self) -> iced::Element<'_, Message> {
     ///         iced::widget::container(
     ///             MarkWidget::new(&self.mark_state)
-    ///                 .on_updating_state(|| Message::UpdateDocument)
+    ///                 .on_updating_state(|n| Message::UpdateDocument(n))
     ///         ).padding(10).into()
     ///     }
     ///
     ///     fn update(&mut self, msg: Message) {
     ///         match msg {
-    ///             Message::UpdateDocument => self.mark_state.update(),
+    ///             Message::UpdateDocument(n) => self.mark_state.update(n),
     /// # _ => {}
     ///             // ...
     ///         }
