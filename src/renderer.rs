@@ -27,18 +27,23 @@ impl<
             markup5ever_rcdom::NodeData::Document => self.render_children(node, data),
 
             markup5ever_rcdom::NodeData::Text { contents } => {
+                fn calc_size(text_size: f32, scaling: f32, factor: f32) -> f32 {
+                    text_size * (1.0 + ((scaling - 1.0) * factor))
+                }
+
                 let text = contents.borrow();
                 let weight = data.heading_weight;
-                let size = match weight {
-                    1 => 32,
-                    2 => 24,
-                    3 => 20,
-                    4 => 18,
-                    5 => 14,
-                    6 => 12,
-                    7 => 10,
-                    _ => 16,
+                let scaling = match weight {
+                    1 => 1.8,
+                    2 => 1.5,
+                    3 => 1.25,
+                    4 => 1.15,
+                    5 => 0.875,
+                    6 => 0.75,
+                    7 => 0.625,
+                    _ => 1.0,
                 };
+                let size = calc_size(self.text_size, scaling, self.heading_scale);
 
                 if data.flags.contains(ChildDataFlags::MONOSPACE) {
                     self.codeblock(
@@ -402,7 +407,7 @@ impl<
         }
     }
 
-    fn codeblock(&self, code: String, size: u16, inline: bool) -> RenderedSpan<'a, M, T> {
+    fn codeblock(&self, code: String, size: f32, inline: bool) -> RenderedSpan<'a, M, T> {
         if let (false, Some(state), Some(select)) = (
             inline,
             self.state.selection_state.get(&code),

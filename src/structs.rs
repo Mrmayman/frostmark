@@ -106,6 +106,8 @@ pub struct MarkWidget<'a, Message, Theme = iced::Theme> {
     pub(crate) font: Font,
     pub(crate) font_mono: Font,
     pub(crate) style: Option<crate::Style>,
+    pub(crate) text_size: f32,
+    pub(crate) heading_scale: f32,
 
     pub(crate) fn_clicking_link: Option<FClickLink<Message>>,
     pub(crate) fn_drawing_image: Option<FDrawImage<'a, Message, Theme>>,
@@ -129,6 +131,8 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
             fn_update: None,
             style: None,
             current_dropdown_id: 0,
+            text_size: 16.0,
+            heading_scale: 1.0,
         }
     }
 
@@ -147,6 +151,35 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     #[must_use]
     pub fn font_mono(mut self, font: Font) -> Self {
         self.font_mono = font;
+        self
+    }
+
+    /// Sets the size of text.
+    ///
+    /// Headings will be scaled as a multiple of this,
+    /// altho you can fine-tune their relative scale
+    /// using [`MarkWidget::heading_scale`].
+    pub fn text_size(mut self, size: impl Into<iced::Pixels>) -> Self {
+        self.text_size = size.into().0;
+        self
+    }
+
+    /// Sets the scaling factor of headings relative to text,
+    /// as a scale from **0.0 to 1.0 to ...**.
+    ///
+    /// This is relative to the base size of the text
+    /// which you can set using [`MarkWidget::text_size`].
+    ///
+    /// If it's
+    /// - 0.0: headings won't be bigger than regular text.
+    /// - 0.x: headings will be slightly bigger
+    /// - 1.0: default scale (somewhat bigger)
+    /// - above 1.0: headings will be **much bigger** than regular text.
+    ///
+    /// For reference, in scale 1.0, `<h1>` headings are 1.8x bigger than regular text.
+    pub fn heading_scale(mut self, scale: f32) -> Self {
+        assert!(scale >= 0.0);
+        self.heading_scale = scale;
         self
     }
 
