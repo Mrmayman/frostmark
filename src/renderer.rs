@@ -73,7 +73,11 @@ impl<
                             t = t.underline(true);
                         }
                         if data.flags.contains(ChildDataFlags::HIGHLIGHT) {
-                            t = t.background(iced::Color::from_rgb8(0xF7, 0xD8, 0x4B));
+                            let highlight_color = self
+                                .style
+                                .and_then(|n| n.highlight_color)
+                                .unwrap_or_else(|| iced::Color::from_rgb8(0xF7, 0xD8, 0x4B));
+                            t = t.background(highlight_color);
                         }
                         t
                     }])
@@ -282,6 +286,11 @@ impl<
         attrs: &std::cell::Ref<'_, Vec<html5ever::Attribute>>,
         data: ChildData,
     ) -> RenderedSpan<'a, M, T> {
+        let link_col = self
+            .style
+            .and_then(|n| n.link_color)
+            .unwrap_or_else(|| iced::Color::from_rgb8(0x5A, 0x6B, 0x9E));
+
         if let Some(attr) = attrs
             .iter()
             .find(|attr| attr.name.local.to_string().as_str() == "href")
@@ -292,12 +301,15 @@ impl<
             let children = self.render_children(node, data);
 
             let msg = self.fn_clicking_link.as_ref();
+
             if children_empty {
-                RenderedSpan::Spans(vec![link_text(widget::span(url.clone()), url, msg)])
+                RenderedSpan::Spans(vec![
+                    link_text(widget::span(url.clone()), url, msg).color(link_col)
+                ])
             } else if let RenderedSpan::Spans(n) = children {
                 RenderedSpan::Spans(
                     n.into_iter()
-                        .map(|n| link_text(n, url.clone(), msg))
+                        .map(|n| link_text(n, url.clone(), msg).color(link_col))
                         .collect(),
                 )
             } else {
@@ -307,7 +319,11 @@ impl<
             let children = self.render_children(node, data);
 
             if let RenderedSpan::Spans(n) = children {
-                RenderedSpan::Spans(n.into_iter().map(|n| n.underline(true)).collect())
+                RenderedSpan::Spans(
+                    n.into_iter()
+                        .map(|n| n.underline(true).color(link_col))
+                        .collect(),
+                )
             } else {
                 link(children.render(), "", Some(&Self::e).filter(|_| false)).into()
             }

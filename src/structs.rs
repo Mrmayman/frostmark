@@ -105,6 +105,7 @@ pub struct MarkWidget<'a, Message, Theme = iced::Theme> {
 
     pub(crate) font: Font,
     pub(crate) font_mono: Font,
+    pub(crate) style: Option<crate::Style>,
 
     pub(crate) fn_clicking_link: Option<FClickLink<Message>>,
     pub(crate) fn_drawing_image: Option<FDrawImage<'a, Message, Theme>>,
@@ -126,6 +127,7 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
             fn_clicking_link: None,
             fn_drawing_image: None,
             fn_update: None,
+            style: None,
             current_dropdown_id: 0,
         }
     }
