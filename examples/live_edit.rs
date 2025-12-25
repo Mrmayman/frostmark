@@ -95,9 +95,9 @@ impl App {
     }
 }
 
-fn main() {
-    iced::application("Live Preview Editing", App::update, App::view)
-        .run_with(|| {
+fn main() -> iced::Result {
+    iced::application(
+        || {
             (
                 App {
                     mode: Mode::MarkdownAndHtml,
@@ -106,8 +106,10 @@ fn main() {
                 },
                 Task::none(),
             )
-        })
-        .unwrap();
+        }, 
+        App::update,
+        App::view
+    ).run()
 }
 
 const DEFAULT: &str = r#"

@@ -130,10 +130,10 @@ impl<
 
             "blockquote" => widget::stack!(
                 widget::row![
-                    widget::Space::with_width(10),
+                    widget::Space::new().width(10),
                     self.render_children(node, data).render()
                 ],
-                widget::vertical_rule(2)
+                widget::rule::vertical(2)
             )
             .into(),
 
@@ -151,13 +151,13 @@ impl<
             "img" => self.draw_image(&attrs),
 
             "br" => widget::Column::new().into(),
-            "hr" => widget::horizontal_rule(4.0).into(),
+            "hr" => widget::rule::horizontal(1.0).into(),
             "head" | "title" | "meta" => RenderedSpan::None,
 
             "input" => match get_attr(&attrs, "type").unwrap_or("text") {
                 "checkbox" => {
                     let checked = attrs.iter().any(|attr| &*attr.name.local == "checked");
-                    widget::checkbox("", checked).into()
+                    widget::checkbox(checked).into()
                 }
                 kind => {
                     RenderedSpan::Spans(vec![widget::span(format!("<input type={kind} (TODO)>"))
@@ -229,23 +229,23 @@ impl<
 
             widget::stack![
                 widget::column![link]
-                    .push_maybe(state.then_some(regular_children.render()))
+                    .push(state.then_some(regular_children.render()))
                     .padding(Padding::default().left(20).bottom(5)),
                 widget::column![if state {
                     widget::text("V").size(12)
                 } else {
                     widget::text(">").size(14)
                 }]
-                .push_maybe(state.then_some(widget::vertical_rule(1)))
+                .push(state.then_some(widget::rule::vertical(1)))
                 .spacing(5)
                 .padding(Padding::default().left(5).top(if state { 5 } else { 0 })),
             ]
             .into()
         } else {
             widget::column![
-                widget::horizontal_rule(1),
+                widget::rule::vertical(1),
                 self.render_children(node, data).render(),
-                widget::horizontal_rule(1),
+                widget::rule::horizontal(1),
             ]
             .padding(10)
             .spacing(10)
