@@ -33,7 +33,7 @@ pub fn underline<'a, M: 'a, T: widget::rule::Catalog + 'a, R: advanced::Renderer
         widget::column![
             widget::space(),
             widget::rule::horizontal(1),
-            widget::Space::new().height(1),
+            widget::space().height(1),
         ]
     )
 }

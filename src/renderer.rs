@@ -130,7 +130,7 @@ impl<
 
             "blockquote" => widget::stack!(
                 widget::row![
-                    widget::Space::new().width(10),
+                    widget::space().width(10),
                     self.render_children(node, data).render()
                 ],
                 widget::rule::vertical(2)

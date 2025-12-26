@@ -89,7 +89,7 @@ impl App {
         widget::scrollable(
             widget::column![
                 page_selector,
-                widget::horizontal_rule(2),
+                widget::rule::horizontal(2),
                 MarkWidget::new(&self.state)
                     .on_updating_state(|msg| Message::UpdateState(msg))
                     .on_clicking_link(Message::OpenLink)
