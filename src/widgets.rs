@@ -1,4 +1,6 @@
-use iced::{advanced, widget, Element, Font};
+use std::sync::Arc;
+
+use iced::{advanced, widget, Element, Font, Length};
 
 use crate::structs::FStyleLinkButton;
 
@@ -39,9 +41,9 @@ pub fn underline<'a, M: 'a, T: widget::rule::Catalog + 'a, R: advanced::Renderer
     widget::stack!(
         widget::column![e.into()],
         widget::column![
-            widget::vertical_space(),
-            widget::horizontal_rule(1),
-            widget::Space::with_height(1),
+            widget::space().height(Length::Fill),
+            widget::rule::horizontal(1),
+            widget::space().height(1),
         ]
     )
 }

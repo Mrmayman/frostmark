@@ -14,9 +14,9 @@ use crate::image_loader::Image;
 #[path = "shared/image_loader.rs"]
 mod image_loader;
 
-fn main() {
-    iced::application("Large Readme", App::update, App::view)
-        .run_with(|| {
+fn main() -> iced::Result{
+    iced::application(
+        || {
             let page = Page::TestSuite;
             let mut app = App {
                 page,
@@ -27,8 +27,10 @@ fn main() {
             };
             let t = app.download_images();
             (app, t)
-        })
-        .unwrap();
+        },
+        App::update,
+        App::view
+    ).run()
 }
 
 #[derive(Debug, Clone)]
@@ -87,7 +89,7 @@ impl App {
         widget::scrollable(
             widget::column![
                 page_selector,
-                widget::horizontal_rule(2),
+                widget::rule::horizontal(2),
                 MarkWidget::new(&self.state)
                     .on_updating_state(|msg| Message::UpdateState(msg))
                     .on_clicking_link(Message::OpenLink)

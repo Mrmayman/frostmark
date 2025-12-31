@@ -36,16 +36,15 @@ impl App {
 }
 
 fn main() {
-    iced::application("Hello World", App::update, App::view)
-        .run_with(|| {
-            (
-                App {
-                    state: MarkState::with_html_and_markdown(YOUR_TEXT),
-                },
-                Task::none(),
-            )
-        })
-        .unwrap();
+    iced::application(
+        || App {
+            state: MarkState::with_html_and_markdown(YOUR_TEXT),
+        },
+        App::update,
+        App::view,
+    )
+    .run()
+    .unwrap();
 }
 
 const YOUR_TEXT: &str = r#"

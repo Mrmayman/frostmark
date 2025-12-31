@@ -12,7 +12,7 @@ keywords = ["gui", "iced", "markdown", "html", "renderer"]
 categories = ["gui"]
 
 [dependencies]
-iced = { version = "0.13", default-features = false, features = ["advanced"] }
+iced = { version = "0.14", default-features = false, features = ["advanced"] }
 html5ever = "0.27"
 markup5ever_rcdom = "0.3"
 bitflags = "2"
@@ -30,23 +30,24 @@ reqwest = { version = "0.12", default-features = false, features = [
 ] }
 
 [features]
-default = ["markdown", "iced-wgpu", "iced-tiny-skia"]
+default = ["markdown", "iced-wgpu", "iced-tiny-skia", "iced-tokio"]
 markdown = ["dep:comrak"]
 iced-wgpu = ["iced/wgpu"]
 iced-tiny-skia = ["iced/tiny-skia"]
+iced-tokio = ["iced/tokio"]
 
 [[example]]
 name = "hello"
-required-features = ["markdown"]
+required-features = []
 
 [[example]]
 name = "live_edit"
-required-features = ["markdown"]
+required-features = []
 
 [[example]]
 name = "image"
-required-features = ["markdown", "iced/image", "iced/tokio"]
+required-features = ["iced/image", "iced/tokio"]
 
 [[example]]
 name = "large_readme"
-required-features = ["markdown", "iced/image", "iced/tokio", "iced/svg"]
+required-features = ["iced/image", "iced/tokio", "iced/svg"]

@@ -422,7 +422,7 @@ where
 
             (r @ Rs::Spans(_), Rs::Elem(element, e)) => Rs::Elem(
                 widget::row![r.render()]
-                    .push_maybe(e.has_something().then_some(element))
+                    .push(e.has_something().then_some(element))
                     .spacing(5)
                     .wrap()
                     .into(),
@@ -430,7 +430,7 @@ where
             ),
             (Rs::Elem(element, e), r @ Rs::Spans(_)) => Rs::Elem(
                 widget::Row::new()
-                    .push_maybe(e.has_something().then_some(element))
+                    .push(e.has_something().then_some(element))
                     .push(r.render())
                     .spacing(5)
                     .wrap()
@@ -439,8 +439,8 @@ where
             ),
             (Rs::Elem(e1, em1), Rs::Elem(e2, em2)) => Rs::Elem(
                 widget::Row::new()
-                    .push_maybe(em1.has_something().then_some(e1))
-                    .push_maybe(em2.has_something().then_some(e2))
+                    .push(em1.has_something().then_some(e1))
+                    .push(em2.has_something().then_some(e2))
                     .spacing(5)
                     .wrap()
                     .into(),
