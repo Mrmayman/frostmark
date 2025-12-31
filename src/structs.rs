@@ -112,6 +112,10 @@ pub struct MarkWidget<'a, Message, Theme = iced::Theme> {
     pub(crate) fn_clicking_link: Option<FClickLink<Message>>,
     pub(crate) fn_drawing_image: Option<FDrawImage<'a, Message, Theme>>,
     pub(crate) fn_update: Option<FUpdate<Message>>,
+    pub(crate) fn_style_link_button:
+        Option<Arc<dyn Fn(&Theme, widget::button::Status) -> widget::button::Style + 'static>>,
+
+    pub(crate) paragraph_spacing: Option<f32>,
 
     pub(crate) current_dropdown_id: usize,
 }
@@ -129,10 +133,12 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
             fn_clicking_link: None,
             fn_drawing_image: None,
             fn_update: None,
+            fn_style_link_button: None,
             style: None,
             current_dropdown_id: 0,
             text_size: 16.0,
             heading_scale: 1.0,
+            paragraph_spacing: None,
         }
     }
 
@@ -292,6 +298,54 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     #[must_use]
     pub fn on_updating_state(mut self, f: impl Fn(UpdateMsg) -> M + 'static) -> Self {
         self.fn_update = Some(Arc::new(f));
+        self
+    }
+
+    /// Change the color of different kinds of text
+    /// in the document using [`crate::Style`].
+    pub fn style(mut self, style: crate::Style) -> Self {
+        self.style = Some(style);
+        self
+    }
+
+    /// Styles link buttons.
+    ///
+    /// Link buttons are links with non-text content (eg: images).
+    /// and unlike text-only links they are rendered with `iced::widget::button`.
+    ///
+    /// For example, you could pass in `iced::widget::button::text`
+    /// if you use iced's built-in theme, or have your own function here.
+    pub fn style_link_button(
+        mut self,
+        f: impl Fn(&T, widget::button::Status) -> widget::button::Style + 'static,
+    ) -> Self {
+        self.fn_style_link_button = Some(Arc::new(f));
+        self
+    }
+
+    /// Spacing between paragraphs or block elements. (default: 5.0)
+    ///
+    /// Visualization with an example document:
+    ///
+    /// ```txt
+    /// # My document
+    ///
+    /// --<spacing>--
+    ///
+    /// Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+    /// sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    ///
+    /// --<spacing>--
+    ///
+    /// Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+    /// nisi ut aliquip ex ea commodo consequat.
+    ///
+    /// --<spacing>--
+    ///
+    /// <image here>
+    /// ```
+    pub fn paragraph_spacing(mut self, spacing: f32) -> Self {
+        self.paragraph_spacing = Some(spacing);
         self
     }
 }

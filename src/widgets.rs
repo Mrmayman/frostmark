@@ -1,17 +1,25 @@
+use std::sync::Arc;
+
 use iced::{advanced, widget, Element, Font};
 
 pub fn link<'a, M: 'a, T, R: advanced::Renderer + 'a, F>(
     e: impl Into<Element<'a, M, T, R>>,
     url: &str,
     msg: Option<&F>,
+    f: Option<Arc<dyn Fn(&T, widget::button::Status) -> widget::button::Style + 'static>>,
 ) -> widget::Button<'a, M, T, R>
 where
     T: widget::button::Catalog + widget::rule::Catalog + 'a,
     F: Fn(String) -> M,
+    <T as widget::button::Catalog>::Class<'a>: From<widget::button::StyleFn<'a, T>>,
 {
-    widget::button(underline(e))
+    let mut b = widget::button(underline(e))
         .on_press_maybe(msg.map(|n| n(url.to_owned())))
-        .padding(0)
+        .padding(0);
+    if let Some(f) = f {
+        b = b.style(move |t, s| f(t, s));
+    }
+    b
 }
 
 pub fn link_text<'a, M: 'a, F>(

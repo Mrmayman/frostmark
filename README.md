@@ -106,7 +106,6 @@ Rendering happens right inside `impl Into<Element> for MarkWidget`.
 ## Roadmap
 
 - Support for more elements (eg: superscript, table)
-- Better widget styling options.
 
 # Contributing
 
