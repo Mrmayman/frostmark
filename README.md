@@ -90,10 +90,8 @@ feature to have more lightweight, HTML-only support.
 - HTML is parsed using [`html5ever`](https://crates.io/crates/html5ever/), from the [Servo](https://servo.org/) project.
 - The resulting DOM is rendered **directly to `iced` widgets** using a custom renderer.
 
-**No custom widget types** - everything is built from standard iced components like:
-`column`, `row`, `rich_text`, `button`, `horizontal_bar`, etc.
-
-Rendering happens right inside `impl Into<Element> for MarkWidget`.
+Everything is built from standard iced components.
+Rendering happens inside `impl Into<Element> for MarkWidget`.
 
 ## Crate Features
 
@@ -110,8 +108,15 @@ Rendering happens right inside `impl Into<Element> for MarkWidget`.
 
 ## Roadmap
 
-- Update to iced 0.14
 - Support for more elements (eg: superscript, table)
+
+---
+
+| Version | iced | MSRV |
+|:-:|:-:|:-:|
+| 0.3 | **0.14** | **1.88** |
+| 0.2 | 0.13 | 1.82 |
+| 0.1 | 0.13 | 1.82 |
 
 # Contributing
 
