@@ -34,7 +34,7 @@ which also showcases basic rendering of images.
 ![](assets/image.png)
 
 ```sh
-cargo run --example image --features="iced/image iced/tokio"
+cargo run --example image --features="iced/image"
 ```
 
 ---
@@ -55,7 +55,7 @@ Side-by-side comparison with frostmark (left) and VSCode (right):
 ![](assets/large_readme.png)
 
 ```sh
-cargo run --example large_readme --features="iced/image iced/tokio iced/svg"
+cargo run --example large_readme --features="iced/image iced/svg"
 ```
 
 ---

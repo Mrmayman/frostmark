@@ -97,11 +97,16 @@ Rendering happens right inside `impl Into<Element> for MarkWidget`.
 
 ## Crate Features
 
+> ✅: enabled by default
+
 - `markdown` ✅: Adds markdown support alongside HTML
 - `iced-tiny-skia` ✅: Enables iced `tiny-skia` rendering backend
-- `iced-wgpu` ✅: Enables iced `wgpu` rendering backend
+- Iced features
+  - Used for internal functioning of iced, can be disabled if you wish
+  - `iced-wgpu` ✅: iced `wgpu` rendering backend
+  - `iced-tokio` ✅: iced `tokio` async runtime
+  - `iced-windowing` ✅: iced `x11` and `wayland` backends
 
-> ✅: enabled by default
 
 ## Roadmap
 

@@ -30,11 +30,12 @@ reqwest = { version = "0.12", default-features = false, features = [
 ] }
 
 [features]
-default = ["markdown", "iced-wgpu", "iced-tiny-skia", "iced-tokio"]
+default = ["markdown", "iced-wgpu", "iced-tiny-skia", "iced-tokio", "iced-windowing"]
 markdown = ["dep:comrak"]
 iced-wgpu = ["iced/wgpu"]
 iced-tiny-skia = ["iced/tiny-skia"]
 iced-tokio = ["iced/tokio"]
+iced-windowing = ["iced/x11", "iced/wayland"]
 
 [[example]]
 name = "hello"
