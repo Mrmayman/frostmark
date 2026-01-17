@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use html5ever::{tendril::TendrilSink, ParseOpts};
+use html5ever::{ParseOpts, tendril::TendrilSink};
 use iced::widget;
 use markup5ever_rcdom::RcDom;
 
@@ -79,7 +79,7 @@ impl MarkState {
         let html = comrak::markdown_to_html(
             input,
             &comrak::Options {
-                extension: comrak::ExtensionOptions {
+                extension: comrak::options::Extension {
                     strikethrough: true,
                     cjk_friendly_emphasis: true,
                     tasklist: true,
@@ -89,11 +89,11 @@ impl MarkState {
                     table: true,
                     ..Default::default()
                 },
-                parse: comrak::ParseOptions::default(),
-                render: comrak::RenderOptions {
+                parse: comrak::options::Parse::default(),
+                render: comrak::options::Render {
                     // Our renderer doesn't have the
                     // vulnerabilities of a browser
-                    unsafe_: true,
+                    r#unsafe: true,
                     ..Default::default()
                 },
             },
@@ -109,10 +109,9 @@ impl MarkState {
     #[must_use]
     #[cfg(feature = "markdown")]
     pub fn with_markdown_only(input: &str) -> Self {
-        let mut out = Vec::new();
-        let mut out_cursor = std::io::Cursor::new(&mut out);
-        _ = comrak::html::escape(&mut out_cursor, input.as_bytes());
-        Self::with_html_and_markdown(&String::from_utf8_lossy(&out))
+        let mut out = String::new();
+        _ = comrak::html::escape(&mut out, input);
+        Self::with_html_and_markdown(&out)
     }
 
     /// Updates the internal state of the document.
