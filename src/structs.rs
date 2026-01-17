@@ -164,7 +164,7 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     /// Sets the size of text.
     ///
     /// Headings will be scaled as a multiple of this,
-    /// altho you can fine-tune their relative scale
+    /// although you can fine-tune their relative scale
     /// using [`MarkWidget::heading_scale`].
     #[must_use]
     pub fn text_size(mut self, size: impl Into<iced::Pixels>) -> Self {
@@ -231,12 +231,9 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     ///     })
     /// ```
     ///
-    /// # Parameters for the closure
-    /// - `url: &str`: The URL of the image to draw.
-    /// - `size: Option<f32>`: An optional heuristic size for the image.
-    ///
-    /// The closure should return some element representing the rendered image,
-    /// or maybe a placeholder if no image is found.
+    /// The closure takes in [`ImageInfo`], and should return
+    /// some element representing the rendered image,
+    /// or a placeholder/loading indicator if no image is found.
     ///
     /// # Notes:
     /// - The returned `Element` **must** be `'static`.
@@ -245,7 +242,7 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     ///   - Clone your `Handle` every frame. Don't return anything
     ///     referencing your app struct.
     /// - **Image URL List**: To get a list of image URLs in the document,
-    ///   use [`MarkState::find_image_links`].
+    ///   use [`MarkState::find_image_links`], and download everything in it.
     /// - **Custom Downloader**: You’ll need to implement your own
     ///   downloader and load it with `iced::widget::image::Handle::from_bytes`
     ///   (or the SVG equivalent).

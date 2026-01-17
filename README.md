@@ -4,13 +4,13 @@
 
 Render rich text in your `iced` app at lightning-fast speeds using plain HTML or Markdown!
 
-![Demo showing HTML and Markdown together](./examples/assets/live_edit.png)
+![(Demo showing HTML and Markdown together)](https://github.com/Mrmayman/frostmark/raw/main/examples/assets/live_edit.png)
 
 ---
 
 ## Usage
 
-1. Create a `MarkState` and **store it in your application state**.
+1. Create a [`MarkState`] and **store it in your application state**.
 
 ```rust
 use frostmark::MarkState;
@@ -23,7 +23,7 @@ let state = MarkState::with_html(text);
 // put this in your App struct
 ```
 
-2. In your `view` function use a `MarkWidget`.
+2. In your `view` function use a [`MarkWidget`].
 
 ```txt
 iced::widget::container( // just an example
@@ -32,12 +32,10 @@ iced::widget::container( // just an example
 .padding(10)
 ```
 
-## Example
-
 You can find runnable examples [here](examples/README.md)
 
 <details>
-<summary>Click to expand a fully fledged code example</summary>
+<summary>Click to expand a full example</summary>
 
 ```rust
 use frostmark::{MarkState, MarkWidget};
@@ -63,48 +61,39 @@ impl App {
 }
 
 fn main() {
-    iced::application("Hello World", App::update, App::view)
-        .run_with(|| {
-            (
-                App {
-                    state: MarkState::with_html_and_markdown(YOUR_TEXT),
-                },
-                Task::none(),
-            )
-        })
-        .unwrap();
+    iced::application(
+        || App { state: MarkState::with_html_and_markdown(YOUR_TEXT) },
+        App::update,
+        App::view
+    ).run().unwrap();
 }
 
 const YOUR_TEXT: &str = "Hello from **markdown** and <b>HTML</b>!";
 ```
 
 </details>
-<br>
 
 **Note:** Markdown support is optional and you can disable the `markdown`
 feature to have more lightweight, HTML-only support.
 
 ## How does this work
 
-- Markdown (if present) is converted to HTML using `comrak`.
-- HTML is parsed using [`html5ever`](https://crates.io/crates/html5ever/), from the [Servo](https://servo.org/) project.
-- The resulting DOM is rendered **directly to `iced` widgets** using a custom renderer.
-
-Everything is built from standard iced components.
-Rendering happens inside `impl Into<Element> for MarkWidget`.
+Markdown (if present) is converted to HTML using `comrak`.
+HTML is parsed using [`html5ever`](https://crates.io/crates/html5ever/),
+from the [Servo](https://servo.org/) project.
+The resulting DOM is rendered **directly to `iced` widgets** using a custom renderer.
 
 ## Crate Features
 
-> ✅: enabled by default
+All enabled by default
 
-- `markdown` ✅: Adds markdown support alongside HTML
-- `iced-tiny-skia` ✅: Enables iced `tiny-skia` rendering backend
-- Iced features
-  - Used for internal functioning of iced, can be disabled if you wish
-  - `iced-wgpu` ✅: iced `wgpu` rendering backend
-  - `iced-tokio` ✅: iced `tokio` async runtime
-  - `iced-windowing` ✅: iced `x11` and `wayland` backends
-
+- `markdown` : Adds markdown support alongside HTML.
+  Disable this if you want HTML-only support, or a lighter program.
+- Built-in iced features (can be disabled if you wish)
+  - `iced-wgpu` : wgpu rendering backend
+  - `iced-tiny-skia` : tiny-skia rendering backend
+  - `iced-tokio` : tokio async runtime
+  - `iced-windowing` : x11 and wayland backends
 
 ## Roadmap
 
