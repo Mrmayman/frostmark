@@ -7,6 +7,7 @@ use iced::{
 #[derive(Debug, Clone)]
 enum Message {
     EditedText(widget::text_editor::Action),
+    ClickedLink(String),
     ChangeParseMode(Mode),
     /// For updating the HTML renderer state.
     /// You can add an id or enum here if you have multiple states
@@ -53,6 +54,10 @@ impl App {
                 self.mode = t;
                 self.reparse();
             }
+            Message::ClickedLink(url) => {
+                println!("Opening link: {url}");
+                _ = open::that(&url);
+            }
         }
         Task::none()
     }
@@ -83,7 +88,9 @@ impl App {
             widget::row![
                 editor,
                 widget::scrollable(
-                    MarkWidget::new(&self.state).on_updating_state(|msg| Message::UpdateState(msg))
+                    MarkWidget::new(&self.state)
+                        .on_updating_state(|msg| Message::UpdateState(msg))
+                        .on_clicking_link(|url| Message::ClickedLink(url))
                 )
                 .width(Length::Fill),
             ]
@@ -106,10 +113,11 @@ fn main() -> iced::Result {
                 },
                 Task::none(),
             )
-        }, 
+        },
         App::update,
-        App::view
-    ).run()
+        App::view,
+    )
+    .run()
 }
 
 const DEFAULT: &str = r#"

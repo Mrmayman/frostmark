@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use iced::{advanced, widget, Element, Font, Length};
 
 use crate::structs::FStyleLinkButton;
@@ -32,7 +30,7 @@ pub fn link_text<'a, M: 'a, F>(
 where
     F: Fn(String) -> M,
 {
-    e.link_maybe(msg.map(|n| n(url))).underline(true)
+    e.link_maybe(msg.map(|n| n(url)))
 }
 
 pub fn underline<'a, M: 'a, T: widget::rule::Catalog + 'a, R: advanced::Renderer + 'a>(

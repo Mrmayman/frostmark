@@ -395,7 +395,7 @@ where
     // btw it supports clone so it's fine if we dont ref
     pub fn render(self) -> Element<'a, M, T> {
         match self {
-            RenderedSpan::Spans(spans) => widget::rich_text(spans).into(),
+            RenderedSpan::Spans(spans) => widget::rich_text(spans).on_link_click(|n| n).into(),
             RenderedSpan::Elem(element, _) => element,
             RenderedSpan::None => widget::Column::new().into(),
         }
