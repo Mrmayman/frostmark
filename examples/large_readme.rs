@@ -5,8 +5,8 @@ use std::{
 
 use frostmark::{MarkState, MarkWidget, UpdateMsg};
 use iced::{
-    widget::{self, image, svg},
     Alignment, Element, Task,
+    widget::{self, image, svg},
 };
 
 use crate::image_loader::Image;
@@ -14,7 +14,7 @@ use crate::image_loader::Image;
 #[path = "shared/image_loader.rs"]
 mod image_loader;
 
-fn main() -> iced::Result{
+fn main() -> iced::Result {
     iced::application(
         || {
             let page = Page::TestSuite;
@@ -29,8 +29,9 @@ fn main() -> iced::Result{
             (app, t)
         },
         App::update,
-        App::view
-    ).run()
+        App::view,
+    )
+    .run()
 }
 
 #[derive(Debug, Clone)]

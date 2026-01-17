@@ -1,4 +1,4 @@
-use iced::{advanced, widget, Element, Font, Length};
+use iced::{Element, Font, Length, advanced, widget};
 
 use crate::structs::FStyleLinkButton;
 

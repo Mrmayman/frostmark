@@ -2,9 +2,9 @@ use std::collections::{HashMap, HashSet};
 
 use frostmark::{MarkState, MarkWidget};
 use iced::{
+    Element, Length, Task,
     advanced::image::Handle,
     widget::{self, image, text_editor::Content},
-    Element, Length, Task,
 };
 
 use crate::image_loader::Image;
@@ -134,6 +134,7 @@ fn main() -> iced::Result {
             (app, t)
         },
         App::update,
-        App::view
-    ).run()
+        App::view,
+    )
+    .run()
 }

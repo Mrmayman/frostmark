@@ -2,8 +2,8 @@ use std::{ops::Add, sync::Arc};
 
 use bitflags::bitflags;
 use iced::{
-    widget::{self, text_editor},
     Element, Font,
+    widget::{self, text_editor},
 };
 
 use crate::state::MarkState;

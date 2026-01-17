@@ -1,5 +1,5 @@
 use frostmark::{MarkState, MarkWidget};
-use iced::{widget, Element, Task};
+use iced::{Element, Task, widget};
 
 #[derive(Debug, Clone)]
 enum Message {}
@@ -22,17 +22,13 @@ impl App {
 
 fn main() -> iced::Result {
     iced::application(
-        || {
-            (
-                App {
-                    state: MarkState::with_html_and_markdown(YOUR_TEXT),
-                },
-                Task::none(),
-            )
+        || App {
+            state: MarkState::with_html_and_markdown(YOUR_TEXT),
         },
         App::update,
-        App::view
-    ).run()
+        App::view,
+    )
+    .run()
 }
 
 const YOUR_TEXT: &str = r"

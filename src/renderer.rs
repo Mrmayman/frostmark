@@ -1,4 +1,4 @@
-use iced::{widget, Element, Font, Padding};
+use iced::{Element, Font, Padding, widget};
 use markup5ever_rcdom::{Node, NodeData};
 
 use crate::{
@@ -12,15 +12,15 @@ use crate::{
 use super::structs::ChildData;
 
 impl<
-        'a,
-        M: Clone + 'static,
-        T: widget::button::Catalog
-            + widget::text::Catalog
-            + widget::rule::Catalog
-            + widget::text_editor::Catalog
-            + widget::checkbox::Catalog
-            + 'a,
-    > MarkWidget<'a, M, T>
+    'a,
+    M: Clone + 'static,
+    T: widget::button::Catalog
+        + widget::text::Catalog
+        + widget::rule::Catalog
+        + widget::text_editor::Catalog
+        + widget::checkbox::Catalog
+        + 'a,
+> MarkWidget<'a, M, T>
 where
     <T as widget::button::Catalog>::Class<'a>: From<widget::button::StyleFn<'a, T>>,
 {
@@ -161,13 +161,12 @@ where
                     let checked = attrs.iter().any(|attr| &*attr.name.local == "checked");
                     widget::checkbox(checked).into()
                 }
-                kind => {
-                    RenderedSpan::Spans(vec![widget::span(format!("<input type={kind} (TODO)>"))
-                        .font(Font {
-                            weight: iced::font::Weight::Bold,
-                            ..self.font
-                        })])
-                }
+                kind => RenderedSpan::Spans(vec![
+                    widget::span(format!("<input type={kind} (TODO)>")).font(Font {
+                        weight: iced::font::Weight::Bold,
+                        ..self.font
+                    }),
+                ]),
             },
 
             "ul" => {
@@ -311,7 +310,7 @@ where
 
             if children_empty {
                 RenderedSpan::Spans(vec![
-                    link_text(widget::span(url.clone()), url, msg).color(link_col)
+                    link_text(widget::span(url.clone()), url, msg).color(link_col),
                 ])
             } else if let RenderedSpan::Spans(n) = children {
                 RenderedSpan::Spans(
@@ -527,15 +526,15 @@ fn is_block_element(node: &Node) -> bool {
 }
 
 impl<
-        'a,
-        M: Clone + 'static,
-        T: widget::button::Catalog
-            + widget::text::Catalog
-            + widget::rule::Catalog
-            + widget::text_editor::Catalog
-            + widget::checkbox::Catalog
-            + 'a,
-    > From<MarkWidget<'a, M, T>> for Element<'a, M, T>
+    'a,
+    M: Clone + 'static,
+    T: widget::button::Catalog
+        + widget::text::Catalog
+        + widget::rule::Catalog
+        + widget::text_editor::Catalog
+        + widget::checkbox::Catalog
+        + 'a,
+> From<MarkWidget<'a, M, T>> for Element<'a, M, T>
 where
     <T as widget::button::Catalog>::Class<'a>: From<widget::button::StyleFn<'a, T>>,
 {

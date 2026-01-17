@@ -1,7 +1,7 @@
 use frostmark::{MarkState, MarkWidget, UpdateMsg};
 use iced::{
-    widget::{self, text_editor::Content},
     Element, Length, Task,
+    widget::{self, text_editor::Content},
 };
 
 #[derive(Debug, Clone)]
@@ -104,15 +104,10 @@ impl App {
 
 fn main() -> iced::Result {
     iced::application(
-        || {
-            (
-                App {
-                    mode: Mode::MarkdownAndHtml,
-                    editor: Content::with_text(DEFAULT),
-                    state: MarkState::with_html_and_markdown(DEFAULT),
-                },
-                Task::none(),
-            )
+        || App {
+            mode: Mode::MarkdownAndHtml,
+            editor: Content::with_text(DEFAULT),
+            state: MarkState::with_html_and_markdown(DEFAULT),
         },
         App::update,
         App::view,

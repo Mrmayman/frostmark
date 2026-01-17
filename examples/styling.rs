@@ -1,5 +1,5 @@
 use frostmark::{MarkState, MarkWidget};
-use iced::{widget, Element, Task};
+use iced::{Element, Task, widget};
 
 #[derive(Debug, Clone)]
 enum Message {}
