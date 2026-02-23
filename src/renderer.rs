@@ -182,6 +182,8 @@ where
                 };
                 widget::row![bullet, self.render_children(node, data).render()].into()
             }
+            "ruby" => self.draw_ruby(node, data),
+            "rt" | "rct" | "rp" | "rb" => RenderedSpan::None,
             _ => RenderedSpan::Spans(vec![widget::span(format!("<{name} (TODO)>")).font(Font {
                 weight: iced::font::Weight::Bold,
                 ..self.font
@@ -197,6 +199,32 @@ where
         } else {
             e
         }
+    }
+
+    fn draw_ruby(&mut self, node: &Node, data: ChildData) -> RenderedSpan<'a, M, T> {
+        let mut base = RenderedSpan::None;
+        let mut annotation = RenderedSpan::None;
+
+        for child in node.children.borrow().iter() {
+            if is_node_useless(child) {
+                continue;
+            }
+            match &child.data {
+                NodeData::Element { name, .. } if &*name.local == "rt" => {
+                    annotation = annotation + self.render_children(child, data);
+                }
+                NodeData::Element { name, .. } if &*name.local == "rp" => {
+                    annotation = annotation + self.render_children(child, data);
+                }
+                NodeData::Element { name, .. } if &*name.local == "rb" => {
+                    base = base + self.render_children(child, data);
+                }
+                _ => {
+                    base = base + self.traverse_node(child, data);
+                }
+            }
+        }
+        base + annotation
     }
 
     fn draw_details(&mut self, node: &Node, data: ChildData) -> RenderedSpan<'a, M, T> {
