@@ -72,3 +72,14 @@ List:
 Text inside
 <summary>Not shown in preview</summary>
 </details>
+
+<details>
+    <summary>Ruby tests</summary>
+    <ruby>東<rt>とう</rt>京<rt>きょう</rt></ruby> renders as 東京 と う き ょ う<br>
+    <ruby>漢字<rp>(</rp><rt>かんじ</rt><rp>)</rp></ruby> renders as 漢字(かんじ)<br>
+    <br>Edge cases:<br>
+    <ruby> <rt>かん</rt> 漢 </ruby><br>
+    <ruby> 漢 text <rt>かん</rt> </ruby><br>
+    <ruby>漢 字 <rt>かん</rt> <rt>じ</rt> </ruby><br>
+    <ruby> <span> 漢<rt>かん</rt> </span></ruby>
+</details>
