@@ -3,7 +3,7 @@ use markup5ever_rcdom::{Node, NodeData};
 
 use crate::{
     structs::{
-        ChildAlignment, ChildDataFlags, ImageInfo, MarkWidget, RenderedSpan, UpdateMsg,
+        ChildAlignment, ChildDataFlags, ImageInfo, MarkWidget, RenderedSpan, RubyMode, UpdateMsg,
         UpdateMsgKind,
     },
     widgets::{link, link_text, underline},
@@ -224,7 +224,11 @@ where
                 }
             }
         }
-        base + annotation
+        if self.ruby_mode == RubyMode::Inline {
+            base + annotation
+        } else {
+            base
+        }
     }
 
     fn draw_details(&mut self, node: &Node, data: ChildData) -> RenderedSpan<'a, M, T> {

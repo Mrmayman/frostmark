@@ -119,6 +119,8 @@ pub struct MarkWidget<'a, Message, Theme = iced::Theme> {
     pub(crate) paragraph_spacing: Option<f32>,
 
     pub(crate) current_dropdown_id: usize,
+
+    pub(crate) ruby_mode: RubyMode,
 }
 
 impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
@@ -140,6 +142,7 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
             text_size: 16.0,
             heading_scale: 1.0,
             paragraph_spacing: None,
+            ruby_mode: RubyMode::default(),
         }
     }
 
@@ -351,6 +354,16 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
         self.paragraph_spacing = Some(spacing);
         self
     }
+
+    /// Controls the rendering behavior of ruby annotations.
+    ///
+    /// By default, annotations are rendered inline after the base text.
+    /// Use [`RubyMode::Ignore`] to only render the base text.
+    #[must_use]
+    pub fn ruby_mode(mut self, mode: RubyMode) -> Self {
+        self.ruby_mode = mode;
+        self
+    }
 }
 
 #[derive(Default)]
@@ -485,4 +498,12 @@ pub struct ImageInfo<'a> {
     pub url: &'a str,
     pub width: Option<f32>,
     pub height: Option<f32>,
+}
+
+/// Controls how ruby annotations are rendered.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum RubyMode {
+    #[default]
+    Inline,
+    Ignore,
 }
