@@ -3,13 +3,15 @@ use markup5ever_rcdom::{Node, NodeData};
 
 use crate::{
     structs::{
-        ChildAlignment, ChildDataFlags, ImageInfo, MarkWidget, RenderedSpan, RubyMode, UpdateMsg,
+        ChildAlignment, ChildDataFlags, ImageInfo, MarkWidget, RenderedSpan, UpdateMsg,
         UpdateMsgKind,
     },
     widgets::{link, link_text, underline},
 };
 
 use super::structs::ChildData;
+
+mod ruby;
 
 impl<
     'a,
@@ -129,6 +131,7 @@ where
             "h5" => self.render_children(node, data.heading(5)),
             "h6" => self.render_children(node, data.heading(6)),
             "sub" => self.render_children(node, data.heading(7)),
+            "rt" => self.render_children(node, data.heading(7).insert(ChildDataFlags::INSIDE_RUBY)),
 
             "blockquote" => widget::stack!(
                 widget::row![
@@ -152,7 +155,13 @@ where
             "a" => self.draw_link(node, &attrs, data),
             "img" => self.draw_image(&attrs),
 
-            "br" => widget::Column::new().into(),
+            "br" => {
+                if data.flags.contains(ChildDataFlags::INSIDE_RUBY) {
+                    RenderedSpan::None
+                } else {
+                    widget::Column::new().into()
+                }
+            }
             "hr" => widget::rule::horizontal(1.0).into(),
             "head" | "title" | "meta" => RenderedSpan::None,
 
@@ -183,7 +192,7 @@ where
                 widget::row![bullet, self.render_children(node, data).render()].into()
             }
             "ruby" => self.draw_ruby(node, data),
-            "rt" | "rct" | "rp" | "rb" => RenderedSpan::None,
+            "rtc" | "rp" | "rb" => RenderedSpan::None,
             _ => RenderedSpan::Spans(vec![widget::span(format!("<{name} (TODO)>")).font(Font {
                 weight: iced::font::Weight::Bold,
                 ..self.font
@@ -198,36 +207,6 @@ where
                 .into()
         } else {
             e
-        }
-    }
-
-    fn draw_ruby(&mut self, node: &Node, data: ChildData) -> RenderedSpan<'a, M, T> {
-        let mut base = RenderedSpan::None;
-        let mut annotation = RenderedSpan::None;
-
-        for child in node.children.borrow().iter() {
-            if is_node_useless(child) {
-                continue;
-            }
-            match &child.data {
-                NodeData::Element { name, .. } if &*name.local == "rt" => {
-                    annotation = annotation + self.render_children(child, data);
-                }
-                NodeData::Element { name, .. } if &*name.local == "rp" => {
-                    annotation = annotation + self.render_children(child, data);
-                }
-                NodeData::Element { name, .. } if &*name.local == "rb" => {
-                    base = base + self.render_children(child, data);
-                }
-                _ => {
-                    base = base + self.traverse_node(child, data);
-                }
-            }
-        }
-        if self.ruby_mode == RubyMode::Inline {
-            base + annotation
-        } else {
-            base
         }
     }
 
@@ -410,7 +389,7 @@ where
             }
             let element = self.traverse_node(item, data);
 
-            if is_block_element(item) {
+            if !data.flags.contains(ChildDataFlags::INSIDE_RUBY) && is_block_element(item) {
                 if !row.is_empty() {
                     let mut old_row = RenderedSpan::None;
                     std::mem::swap(&mut row, &mut old_row);
@@ -553,6 +532,7 @@ fn is_block_element(node: &Node) -> bool {
             | "ul"
             | "video"
             | "br"
+            | "details"
             | "summary" // not really block but acts like it
     )
 }

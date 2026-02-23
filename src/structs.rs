@@ -60,6 +60,7 @@ bitflags! {
         const MONOSPACE = 1 << 5;
         const SKIP_SUMMARY = 1 << 6;
         const HIGHLIGHT = 1 << 7;
+        const INSIDE_RUBY = 1 << 8;
     }
 }
 
@@ -357,8 +358,9 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
 
     /// Controls the rendering behavior of ruby annotations.
     ///
-    /// By default, annotations are rendered inline after the base text.
-    /// Use [`RubyMode::Ignore`] to only render the base text.
+    /// By default, annotations are rendered with proper layout.
+    /// Use [`RubyMode::Fallback`] for basic inline rendering (performance),
+    /// or [`RubyMode::Ignore`] to only render the base text.
     #[must_use]
     pub fn ruby_mode(mut self, mode: RubyMode) -> Self {
         self.ruby_mode = mode;
@@ -503,7 +505,11 @@ pub struct ImageInfo<'a> {
 /// Controls how ruby annotations are rendered.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum RubyMode {
+    /// Layout horizontally with proper annotation support
     #[default]
-    Inline,
+    Full,
+    /// Primitive inline layout, for better performance
+    Fallback,
+    /// Ignore ruby annotations entirely
     Ignore,
 }
