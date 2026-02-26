@@ -19,6 +19,7 @@ impl<
         + widget::rule::Catalog
         + widget::text_editor::Catalog
         + widget::checkbox::Catalog
+        + widget::container::Catalog
         + 'a,
 > MarkWidget<'a, M, T>
 where
@@ -182,6 +183,9 @@ where
                 };
                 widget::row![bullet, self.render_children(node, data).render()].into()
             }
+
+            "table" => self.draw_table(node, data),
+            "thead" | "tbody" | "tfoot" => self.render_children(node, data),
             _ => RenderedSpan::Spans(vec![widget::span(format!("<{name} (TODO)>")).font(Font {
                 weight: iced::font::Weight::Bold,
                 ..self.font
@@ -362,6 +366,8 @@ where
             if is_node_useless(item) {
                 continue;
             }
+
+            #[allow(clippy::collapsible_if)]
             if let NodeData::Element { name, .. } = &item.data {
                 if !skipped_summary
                     && data.flags.contains(ChildDataFlags::SKIP_SUMMARY)
@@ -435,6 +441,106 @@ where
         } else {
             RenderedSpan::Spans(vec![widget::span(code).size(size).font(self.font_mono)])
         }
+    }
+
+    fn draw_table(&mut self, node: &Node, data: ChildData) -> RenderedSpan<'a, M, T> {
+        let mut header_cells: Vec<RenderedSpan<'a, M, T>> = Vec::new();
+        let mut column_alignments: Vec<Option<ChildAlignment>> = Vec::new();
+        let mut body_rows: Vec<Vec<RenderedSpan<'a, M, T>>> = Vec::new();
+
+        let children = node.children.borrow();
+        for section in children.iter() {
+            let NodeData::Element { name, .. } = &section.data else {
+                continue;
+            };
+            let section_name = name.local.to_string();
+
+            let rows = section.children.borrow();
+            for row in rows.iter() {
+                let NodeData::Element { name, .. } = &row.data else {
+                    continue;
+                };
+                if name.local.to_string() != "tr" {
+                    continue;
+                }
+
+                let row_children = row.children.borrow();
+                let cells: Vec<_> = row_children
+                    .iter()
+                    .filter(|cell| {
+                        matches!(
+                            &cell.data,
+                            NodeData::Element { name, .. }
+                                if matches!(name.local.to_string().as_str(), "th" | "td")
+                        )
+                    })
+                    .collect();
+
+                if section_name == "thead" || (header_cells.is_empty() && body_rows.is_empty()) {
+                    column_alignments = cells
+                        .iter()
+                        .map(|cell| {
+                            if let NodeData::Element { attrs, .. } = &cell.data {
+                                let attrs = attrs.borrow();
+                                match get_attr(&attrs, "align") {
+                                    Some("right") => Some(ChildAlignment::Right),
+                                    Some("center") | Some("centre") => Some(ChildAlignment::Center),
+                                    _ => None,
+                                }
+                            } else {
+                                None
+                            }
+                        })
+                        .collect();
+
+                    header_cells = cells
+                        .iter()
+                        .map(|cell| self.render_children(cell, data.insert(ChildDataFlags::BOLD)))
+                        .collect();
+                } else {
+                    body_rows.push(
+                        cells
+                            .iter()
+                            .map(|cell| self.render_children(cell, data))
+                            .collect(),
+                    );
+                }
+            }
+        }
+
+        let make_cell = |content: RenderedSpan<'a, M, T>, align: Option<ChildAlignment>| {
+            let alignment: iced::Alignment =
+                align.map(|a| a.into()).unwrap_or(iced::Alignment::Start);
+
+            widget::container(
+                widget::column![content.render()]
+                    .width(iced::Length::Fill)
+                    .align_x(alignment),
+            )
+            .padding(5)
+            .width(iced::Length::Fill)
+        };
+
+        let header_row: iced::Element<'a, M, T> =
+            widget::row(header_cells.into_iter().enumerate().map(|(i, cell)| {
+                make_cell(cell, column_alignments.get(i).copied().flatten()).into()
+            }))
+            .spacing(2)
+            .into();
+
+        let body: iced::Element<'a, M, T> = widget::column(body_rows.into_iter().map(|row| {
+            widget::row(row.into_iter().enumerate().map(|(i, cell)| {
+                make_cell(cell, column_alignments.get(i).copied().flatten()).into()
+            }))
+            .spacing(2)
+            .into()
+        }))
+        .spacing(2)
+        .into();
+
+        widget::column![header_row, widget::rule::horizontal(1), body,]
+            .spacing(4)
+            .into()
     }
 }
 
@@ -533,6 +639,7 @@ impl<
         + widget::rule::Catalog
         + widget::text_editor::Catalog
         + widget::checkbox::Catalog
+        + widget::container::Catalog
         + 'a,
 > From<MarkWidget<'a, M, T>> for Element<'a, M, T>
 where
