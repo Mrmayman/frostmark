@@ -128,14 +128,11 @@ fn draw_row<'a, M: Clone + 'static, T: ValidTheme + 'a>(
 fn make_cell<'a, M: Clone + 'static, T: ValidTheme + 'a>(
     content: RenderedSpan<'a, M, T>,
     align: Option<ChildAlignment>,
-) -> widget::Container<'a, M, T> {
+) -> widget::Column<'a, M, T> {
     let alignment: iced::Alignment = align.map_or(iced::Alignment::Start, ChildAlignment::into);
 
-    widget::container(
-        widget::column![content.render()]
-            .width(Length::Fill)
-            .align_x(alignment),
-    )
-    .padding(5)
-    .width(Length::Fill)
+    widget::column![content.render()]
+        .align_x(alignment)
+        .padding(5)
+        .width(Length::Fill)
 }
