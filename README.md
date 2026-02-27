@@ -113,4 +113,12 @@ This library is experimental.
 Bug reports and pull requests are welcome;
 contributions are appreciated!
 
-- **License**: Dual licensed under MIT and Apache 2.0.
+## Contributors
+
+- **[Mrmayman](https://github.com/Mrmayman) - Creator**
+- [mariinkys](https://github.com/mariinkys) - Added table support
+- [ruguysgoingtrickortreating](https://github.com/ruguysgoingtrickortreating) - Updated to iced 0.14
+
+---
+
+**License**: Dual licensed under MIT and Apache 2.0.
