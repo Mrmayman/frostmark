@@ -11,17 +11,29 @@ use crate::{
 
 use super::structs::ChildData;
 
-impl<
-    'a,
-    M: Clone + 'static,
+mod table;
+
+// Add everything to one place
+pub trait ValidTheme:
+    widget::button::Catalog
+    + widget::text::Catalog
+    + widget::rule::Catalog
+    + widget::text_editor::Catalog
+    + widget::checkbox::Catalog
+    + widget::container::Catalog
+{
+}
+impl<T> ValidTheme for T where
     T: widget::button::Catalog
         + widget::text::Catalog
         + widget::rule::Catalog
         + widget::text_editor::Catalog
         + widget::checkbox::Catalog
         + widget::container::Catalog
-        + 'a,
-> MarkWidget<'a, M, T>
+{
+}
+
+impl<'a, M: Clone + 'static, T: ValidTheme + 'a> MarkWidget<'a, M, T>
 where
     <T as widget::button::Catalog>::Class<'a>: From<widget::button::StyleFn<'a, T>>,
 {
@@ -442,106 +454,6 @@ where
             RenderedSpan::Spans(vec![widget::span(code).size(size).font(self.font_mono)])
         }
     }
-
-    fn draw_table(&mut self, node: &Node, data: ChildData) -> RenderedSpan<'a, M, T> {
-        let mut header_cells: Vec<RenderedSpan<'a, M, T>> = Vec::new();
-        let mut column_alignments: Vec<Option<ChildAlignment>> = Vec::new();
-        let mut body_rows: Vec<Vec<RenderedSpan<'a, M, T>>> = Vec::new();
-
-        let children = node.children.borrow();
-        for section in children.iter() {
-            let NodeData::Element { name, .. } = &section.data else {
-                continue;
-            };
-            let section_name = name.local.to_string();
-
-            let rows = section.children.borrow();
-            for row in rows.iter() {
-                let NodeData::Element { name, .. } = &row.data else {
-                    continue;
-                };
-                if name.local.to_string() != "tr" {
-                    continue;
-                }
-
-                let row_children = row.children.borrow();
-                let cells: Vec<_> = row_children
-                    .iter()
-                    .filter(|cell| {
-                        matches!(
-                            &cell.data,
-                            NodeData::Element { name, .. }
-                                if matches!(name.local.to_string().as_str(), "th" | "td")
-                        )
-                    })
-                    .collect();
-
-                if section_name == "thead" || (header_cells.is_empty() && body_rows.is_empty()) {
-                    column_alignments = cells
-                        .iter()
-                        .map(|cell| {
-                            if let NodeData::Element { attrs, .. } = &cell.data {
-                                let attrs = attrs.borrow();
-                                match get_attr(&attrs, "align") {
-                                    Some("right") => Some(ChildAlignment::Right),
-                                    Some("center" | "centre") => Some(ChildAlignment::Center),
-                                    _ => None,
-                                }
-                            } else {
-                                None
-                            }
-                        })
-                        .collect();
-
-                    header_cells = cells
-                        .iter()
-                        .map(|cell| self.render_children(cell, data.insert(ChildDataFlags::BOLD)))
-                        .collect();
-                } else {
-                    body_rows.push(
-                        cells
-                            .iter()
-                            .map(|cell| self.render_children(cell, data))
-                            .collect(),
-                    );
-                }
-            }
-        }
-
-        let make_cell = |content: RenderedSpan<'a, M, T>, align: Option<ChildAlignment>| {
-            let alignment: iced::Alignment =
-                align.map_or(iced::Alignment::Start, ChildAlignment::into);
-
-            widget::container(
-                widget::column![content.render()]
-                    .width(Length::Fill)
-                    .align_x(alignment),
-            )
-            .padding(5)
-            .width(Length::Fill)
-        };
-
-        let header_row: iced::Element<'a, M, T> =
-            widget::row(header_cells.into_iter().enumerate().map(|(i, cell)| {
-                make_cell(cell, column_alignments.get(i).copied().flatten()).into()
-            }))
-            .spacing(2)
-            .into();
-
-        let body: iced::Element<'a, M, T> = widget::column(body_rows.into_iter().map(|row| {
-            widget::row(row.into_iter().enumerate().map(|(i, cell)| {
-                make_cell(cell, column_alignments.get(i).copied().flatten()).into()
-            }))
-            .spacing(2)
-            .into()
-        }))
-        .spacing(2)
-        .into();
-
-        widget::column![header_row, widget::rule::horizontal(1), body,]
-            .spacing(4)
-            .into()
-    }
 }
 
 fn alignment_read(data: &mut ChildData, attrs: &[html5ever::Attribute]) {
@@ -632,17 +544,7 @@ fn is_block_element(node: &Node) -> bool {
     )
 }
 
-impl<
-    'a,
-    M: Clone + 'static,
-    T: widget::button::Catalog
-        + widget::text::Catalog
-        + widget::rule::Catalog
-        + widget::text_editor::Catalog
-        + widget::checkbox::Catalog
-        + widget::container::Catalog
-        + 'a,
-> From<MarkWidget<'a, M, T>> for Element<'a, M, T>
+impl<'a, M: Clone + 'static, T: ValidTheme + 'a> From<MarkWidget<'a, M, T>> for Element<'a, M, T>
 where
     <T as widget::button::Catalog>::Class<'a>: From<widget::button::StyleFn<'a, T>>,
 {
