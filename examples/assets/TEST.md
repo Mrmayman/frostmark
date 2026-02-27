@@ -46,11 +46,19 @@ Some space...
 ...between these lines.
 <hr>
 
+<details>
+<summary>Summary (click to expand)</summary>
+Text inside
+<summary>(Not shown when closed)</summary>
+</details>
+
 Tasks:
 - [ ] Do thing 1
 - [ ] Do thing 2
 - [x] Do thing 3
 
+<details>
+    <summary>Lists</summary>
 List:
 1. Nesting ordered list
     1. Subitem 1
@@ -66,9 +74,40 @@ List:
           - Subitem
     2. Subitem
         1. Subitem
+</details>
 
 <details>
-<summary>Summary (shown)</summary>
-Text inside
-<summary>Not shown in preview</summary>
+    <summary>Tables</summary>
+    <table>
+      <tr>
+        <th>Company</th>
+        <th>Contact</th>
+        <th>Country</th>
+      </tr>
+      <tr>
+        <td>Alfreds Futterkiste</td>
+        <td>Maria Anders</td>
+        <td>Germany</td>
+      </tr>
+      <tr>
+        <td>Centro comercial Moctezuma</td>
+        <td>Francisco Chang</td>
+        <td>Mexico</td>
+      </tr>
+    </table>
+
+| Option | Description |
+| ------ | ----------- |
+| data   | path to data files to supply the data that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default. |
+| ext    | extension to be used for dest files. |
+
+Right aligned columns
+
+| Option | Description |
+| ------:| -----------:|
+| data   | path to data files to supply the data that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default. |
+| ext    | extension to be used for dest files. |
+
 </details>
