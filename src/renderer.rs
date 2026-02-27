@@ -1,4 +1,4 @@
-use iced::{Element, Font, Padding, widget};
+use iced::{Element, Font, Length, Padding, widget};
 use markup5ever_rcdom::{Node, NodeData};
 
 use crate::{
@@ -11,16 +11,27 @@ use crate::{
 
 use super::structs::ChildData;
 
-impl<
-    'a,
-    M: Clone + 'static,
+mod table;
+
+// Add everything to one place
+pub trait ValidTheme:
+    widget::button::Catalog
+    + widget::text::Catalog
+    + widget::rule::Catalog
+    + widget::text_editor::Catalog
+    + widget::checkbox::Catalog
+{
+}
+impl<T> ValidTheme for T where
     T: widget::button::Catalog
         + widget::text::Catalog
         + widget::rule::Catalog
         + widget::text_editor::Catalog
         + widget::checkbox::Catalog
-        + 'a,
-> MarkWidget<'a, M, T>
+{
+}
+
+impl<'a, M: Clone + 'static, T: ValidTheme + 'a> MarkWidget<'a, M, T>
 where
     <T as widget::button::Catalog>::Class<'a>: From<widget::button::StyleFn<'a, T>>,
 {
@@ -182,6 +193,9 @@ where
                 };
                 widget::row![bullet, self.render_children(node, data).render()].into()
             }
+
+            "table" => self.draw_table(node, data),
+            "thead" | "tbody" | "tfoot" => self.render_children(node, data),
             _ => RenderedSpan::Spans(vec![widget::span(format!("<{name} (TODO)>")).font(Font {
                 weight: iced::font::Weight::Bold,
                 ..self.font
@@ -191,7 +205,7 @@ where
         if let (true, Some(align)) = (block_element, data.alignment) {
             let align: iced::Alignment = align.into();
             widget::column![e.render()]
-                .width(iced::Length::Fill)
+                .width(Length::Fill)
                 .align_x(align)
                 .into()
         } else {
@@ -362,14 +376,16 @@ where
             if is_node_useless(item) {
                 continue;
             }
-            if let NodeData::Element { name, .. } = &item.data {
-                if !skipped_summary
-                    && data.flags.contains(ChildDataFlags::SKIP_SUMMARY)
-                    && &*name.local == "summary"
-                {
-                    skipped_summary = true;
-                    continue;
-                }
+
+            if let NodeData::Element { name, .. } = &item.data
+                && !skipped_summary
+                && data.flags.contains(ChildDataFlags::SKIP_SUMMARY)
+                && &*name.local == "summary"
+            {
+                // Skip the first <summary> inside <details>
+                // as it's already drawn
+                skipped_summary = true;
+                continue;
             }
 
             let mut data = data;
@@ -521,20 +537,12 @@ fn is_block_element(node: &Node) -> bool {
             | "ul"
             | "video"
             | "br"
-            | "summary" // not really block but acts like it
+            | "details"
+            | "summary"
     )
 }
 
-impl<
-    'a,
-    M: Clone + 'static,
-    T: widget::button::Catalog
-        + widget::text::Catalog
-        + widget::rule::Catalog
-        + widget::text_editor::Catalog
-        + widget::checkbox::Catalog
-        + 'a,
-> From<MarkWidget<'a, M, T>> for Element<'a, M, T>
+impl<'a, M: Clone + 'static, T: ValidTheme + 'a> From<MarkWidget<'a, M, T>> for Element<'a, M, T>
 where
     <T as widget::button::Catalog>::Class<'a>: From<widget::button::StyleFn<'a, T>>,
 {
@@ -546,15 +554,17 @@ where
 
 fn clean_whitespace(input: &str) -> String {
     let mut s = input.split_whitespace().collect::<Vec<&str>>().join(" ");
-    if let Some(last) = input.chars().last() {
-        if last.is_whitespace() && last != '\n' {
-            s.push(last);
-        }
+    if let Some(last) = input.chars().next_back()
+        && last != '\n'
+        && last.is_whitespace()
+    {
+        s.push(last);
     }
-    if let Some(first) = input.chars().next() {
-        if first.is_whitespace() && first != '\n' {
-            s.insert(0, first);
-        }
+    if let Some(first) = input.chars().next()
+        && first != '\n'
+        && first.is_whitespace()
+    {
+        s.insert(0, first);
     }
     s
 }
