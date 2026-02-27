@@ -1,4 +1,4 @@
-use iced::{Element, Font, Padding, widget};
+use iced::{Element, Font, Length, Padding, widget};
 use markup5ever_rcdom::{Node, NodeData};
 
 use crate::{
@@ -195,7 +195,7 @@ where
         if let (true, Some(align)) = (block_element, data.alignment) {
             let align: iced::Alignment = align.into();
             widget::column![e.render()]
-                .width(iced::Length::Fill)
+                .width(Length::Fill)
                 .align_x(align)
                 .into()
         } else {
@@ -367,15 +367,15 @@ where
                 continue;
             }
 
-            #[allow(clippy::collapsible_if)]
-            if let NodeData::Element { name, .. } = &item.data {
-                if !skipped_summary
-                    && data.flags.contains(ChildDataFlags::SKIP_SUMMARY)
-                    && &*name.local == "summary"
-                {
-                    skipped_summary = true;
-                    continue;
-                }
+            if let NodeData::Element { name, .. } = &item.data
+                && !skipped_summary
+                && data.flags.contains(ChildDataFlags::SKIP_SUMMARY)
+                && &*name.local == "summary"
+            {
+                // Skip the first <summary> inside <details>
+                // as it's already drawn
+                skipped_summary = true;
+                continue;
             }
 
             let mut data = data;
@@ -484,7 +484,7 @@ where
                                 let attrs = attrs.borrow();
                                 match get_attr(&attrs, "align") {
                                     Some("right") => Some(ChildAlignment::Right),
-                                    Some("center") | Some("centre") => Some(ChildAlignment::Center),
+                                    Some("center" | "centre") => Some(ChildAlignment::Center),
                                     _ => None,
                                 }
                             } else {
@@ -510,15 +510,15 @@ where
 
         let make_cell = |content: RenderedSpan<'a, M, T>, align: Option<ChildAlignment>| {
             let alignment: iced::Alignment =
-                align.map(|a| a.into()).unwrap_or(iced::Alignment::Start);
+                align.map_or(iced::Alignment::Start, ChildAlignment::into);
 
             widget::container(
                 widget::column![content.render()]
-                    .width(iced::Length::Fill)
+                    .width(Length::Fill)
                     .align_x(alignment),
             )
             .padding(5)
-            .width(iced::Length::Fill)
+            .width(Length::Fill)
         };
 
         let header_row: iced::Element<'a, M, T> =
@@ -653,15 +653,17 @@ where
 
 fn clean_whitespace(input: &str) -> String {
     let mut s = input.split_whitespace().collect::<Vec<&str>>().join(" ");
-    if let Some(last) = input.chars().last() {
-        if last.is_whitespace() && last != '\n' {
-            s.push(last);
-        }
+    if let Some(last) = input.chars().next_back()
+        && last != '\n'
+        && last.is_whitespace()
+    {
+        s.push(last);
     }
-    if let Some(first) = input.chars().next() {
-        if first.is_whitespace() && first != '\n' {
-            s.insert(0, first);
-        }
+    if let Some(first) = input.chars().next()
+        && first != '\n'
+        && first.is_whitespace()
+    {
+        s.insert(0, first);
     }
     s
 }
