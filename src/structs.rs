@@ -28,8 +28,8 @@ impl ChildData {
         self
     }
 
-    pub fn ordered(mut self) -> Self {
-        self.li_ordered_number = Some(1);
+    pub fn ordered_from(mut self, start: usize) -> Self {
+        self.li_ordered_number = Some(start);
         self
     }
 }

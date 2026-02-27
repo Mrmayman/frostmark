@@ -192,7 +192,10 @@ where
                 data.li_ordered_number = None;
                 self.render_children(node, data)
             }
-            "ol" => self.render_children(node, data.ordered()),
+            "ol" => {
+                let start = get_attr_num(&attrs, "start").unwrap_or(1.0) as usize;
+                self.render_children(node, data.ordered_from(start))
+            }
             "li" => {
                 let bullet = if let Some(num) = data.li_ordered_number {
                     widget::text!("{num}. ")
@@ -379,6 +382,7 @@ where
         let mut row = RenderedSpan::None;
 
         let mut skipped_summary = false;
+        let original_start = data.li_ordered_number;
 
         let mut i = 0;
         for item in children.iter() {
@@ -398,8 +402,8 @@ where
             }
 
             let mut data = data;
-            if data.li_ordered_number.is_some() {
-                data.li_ordered_number = Some(i + 1);
+            if let Some(base) = original_start {
+                data.li_ordered_number = Some(base + i);
             }
             let element = self.traverse_node(item, data);
 
