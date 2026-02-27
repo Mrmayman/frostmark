@@ -627,7 +627,8 @@ fn is_block_element(node: &Node) -> bool {
             | "ul"
             | "video"
             | "br"
-            | "summary" // not really block but acts like it
+            | "details"
+            | "summary"
     )
 }
 
