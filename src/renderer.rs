@@ -125,9 +125,9 @@ where
         }
 
         let e = match name.as_str() {
-            "summary" | "kbd" | "span" | "html" | "body" | "p" | "div" => {
-                self.render_children(node, data)
-            }
+            "summary" | "kbd" | "span" | "html" | "body" | "p" | "div" | "thead" | "tbody"
+            | "tfoot" => self.render_children(node, data),
+
             "center" => {
                 data.alignment = Some(ChildAlignment::Center);
                 self.render_children(node, data)
@@ -173,7 +173,7 @@ where
                 }
             }
             "hr" => widget::rule::horizontal(1.0).into(),
-            "head" | "title" | "meta" => RenderedSpan::None,
+            "head" | "title" | "meta" | "rtc" | "rp" | "rb" => RenderedSpan::None,
 
             "input" => match get_attr(&attrs, "type").unwrap_or("text") {
                 "checkbox" => {
@@ -203,10 +203,7 @@ where
             }
 
             "ruby" => self.draw_ruby(node, data),
-            "rtc" | "rp" | "rb" => RenderedSpan::None,
-
             "table" => self.draw_table(node, data),
-            "thead" | "tbody" | "tfoot" => self.render_children(node, data),
 
             _ => RenderedSpan::Spans(vec![widget::span(format!("<{name} (TODO)>")).font(Font {
                 weight: iced::font::Weight::Bold,

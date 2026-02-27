@@ -3,7 +3,7 @@ use markup5ever_rcdom::{Node, NodeData};
 
 use crate::{
     MarkWidget, RubyMode,
-    renderer::is_node_useless,
+    renderer::{ValidTheme, is_node_useless},
     structs::{ChildData, Emp, RenderedSpan},
 };
 
@@ -12,7 +12,7 @@ struct RubyUnit<'a, M, T> {
     annotations: Vec<RenderedSpan<'a, M, T>>,
 }
 
-impl<'a, M, T> Default for RubyUnit<'a, M, T> {
+impl<M, T> Default for RubyUnit<'_, M, T> {
     fn default() -> Self {
         Self {
             base: RenderedSpan::None,
@@ -21,16 +21,7 @@ impl<'a, M, T> Default for RubyUnit<'a, M, T> {
     }
 }
 
-impl<
-    'a,
-    M: Clone + 'static,
-    T: widget::button::Catalog
-        + widget::text::Catalog
-        + widget::rule::Catalog
-        + widget::text_editor::Catalog
-        + widget::checkbox::Catalog
-        + 'a,
-> MarkWidget<'a, M, T>
+impl<'a, M: Clone + 'static, T: ValidTheme + 'a> MarkWidget<'a, M, T>
 where
     <T as widget::button::Catalog>::Class<'a>: From<widget::button::StyleFn<'a, T>>,
 {
