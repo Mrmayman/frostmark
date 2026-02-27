@@ -11,6 +11,7 @@ use crate::{
 
 use super::structs::ChildData;
 
+mod ruby;
 mod table;
 
 // Add everything to one place
@@ -124,9 +125,9 @@ where
         }
 
         let e = match name.as_str() {
-            "summary" | "kbd" | "span" | "html" | "body" | "p" | "div" => {
-                self.render_children(node, data)
-            }
+            "summary" | "kbd" | "span" | "html" | "body" | "p" | "div" | "thead" | "tbody"
+            | "tfoot" => self.render_children(node, data),
+
             "center" => {
                 data.alignment = Some(ChildAlignment::Center);
                 self.render_children(node, data)
@@ -140,6 +141,7 @@ where
             "h5" => self.render_children(node, data.heading(5)),
             "h6" => self.render_children(node, data.heading(6)),
             "sub" => self.render_children(node, data.heading(7)),
+            "rt" => self.render_children(node, data.heading(7).insert(ChildDataFlags::INSIDE_RUBY)),
 
             "blockquote" => widget::stack!(
                 widget::row![
@@ -163,9 +165,15 @@ where
             "a" => self.draw_link(node, &attrs, data),
             "img" => self.draw_image(&attrs),
 
-            "br" => widget::Column::new().into(),
+            "br" => {
+                if data.flags.contains(ChildDataFlags::INSIDE_RUBY) {
+                    RenderedSpan::None
+                } else {
+                    widget::Column::new().into()
+                }
+            }
             "hr" => widget::rule::horizontal(1.0).into(),
-            "head" | "title" | "meta" => RenderedSpan::None,
+            "head" | "title" | "meta" | "rtc" | "rp" | "rb" => RenderedSpan::None,
 
             "input" => match get_attr(&attrs, "type").unwrap_or("text") {
                 "checkbox" => {
@@ -194,8 +202,9 @@ where
                 widget::row![bullet, self.render_children(node, data).render()].into()
             }
 
+            "ruby" => self.draw_ruby(node, data),
             "table" => self.draw_table(node, data),
-            "thead" | "tbody" | "tfoot" => self.render_children(node, data),
+
             _ => RenderedSpan::Spans(vec![widget::span(format!("<{name} (TODO)>")).font(Font {
                 weight: iced::font::Weight::Bold,
                 ..self.font
@@ -394,7 +403,7 @@ where
             }
             let element = self.traverse_node(item, data);
 
-            if is_block_element(item) {
+            if !data.flags.contains(ChildDataFlags::INSIDE_RUBY) && is_block_element(item) {
                 if !row.is_empty() {
                     let mut old_row = RenderedSpan::None;
                     std::mem::swap(&mut row, &mut old_row);
