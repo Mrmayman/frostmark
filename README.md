@@ -95,9 +95,11 @@ All enabled by default
   - `iced-tokio` : tokio async runtime
   - `iced-windowing` : x11 and wayland backends
 
-## Roadmap
+## TODO
 
-- Support for more elements (eg: superscript, table)
+- Support for more elements (eg: superscript)
+- Fix `<ruby>` edge cases
+- (Maybe) support for CSS?
 
 ---
 
