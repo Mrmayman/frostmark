@@ -116,7 +116,8 @@ contributions are appreciated!
 ## Contributors
 
 - **[Mrmayman](https://github.com/Mrmayman) - Creator**
-- [mariinkys](https://github.com/mariinkys) - Added table support
+- [mariinkys](https://github.com/mariinkys) - Table support
+- [Drodofsky](https://github.com/Drodofsky) - Ruby text support
 - [ruguysgoingtrickortreating](https://github.com/ruguysgoingtrickortreating) - Updated to iced 0.14
 
 ---
