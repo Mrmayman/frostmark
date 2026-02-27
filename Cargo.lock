@@ -739,7 +739,7 @@ dependencies = [
 
 [[package]]
 name = "frostmark"
-version = "0.3.0"
+version = "0.3.1-dev"
 dependencies = [
  "bitflags 2.10.0",
  "comrak",
