@@ -193,7 +193,9 @@ where
                 self.render_children(node, data)
             }
             "ol" => {
-                let start = get_attr_num(&attrs, "start").unwrap_or(1.0) as usize;
+                let start = get_attr(&attrs, "start")
+                    .and_then(|n| n.parse::<usize>().ok())
+                    .unwrap_or(1);
                 self.render_children(node, data.ordered_from(start))
             }
             "li" => {
