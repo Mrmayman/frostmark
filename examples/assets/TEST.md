@@ -59,7 +59,7 @@ Tasks:
 
 <details>
     <summary>Lists</summary>
-List:
+
 1. Nesting ordered list
     1. Subitem 1
     2. Subitem 2
@@ -74,6 +74,11 @@ List:
           - Subitem
     2. Subitem
         1. Subitem
+
+Ordering:
+
+67. Hello there
+1. eee
 </details>
 
 <details>
