@@ -1,6 +1,6 @@
 [package]
 name = "frostmark"
-version = "0.3.1"
+version = "0.4.0-dev"
 edition = "2024"
 authors = ["Mrmayman <navneetkrishna22@gmail.com>"]
 description = "HTML/Markdown renderer for the Iced GUI framework"
@@ -13,25 +13,23 @@ categories = ["gui"]
 rust-version = "1.88"
 
 [dependencies]
-iced = { version = "0.14", default-features = false, features = ["advanced"] }
 html5ever = "0.36"
 markup5ever_rcdom = "0.36"
 bitflags = "2"
-
 comrak = { version = "0.49", default-features = false, optional = true }
 
-[dev-dependencies]
+iced_core = "0.14"
+widget = { version = "0.14", package = "iced_widget" }
+
+[dev-dependencies] # For the examples
 open = "5"
 tokio = "1"
 reqwest = { version = "0.13" }
+iced = { version = "0.14", default-features = false, features = ["wgpu", "tiny-skia", "tokio", "x11", "wayland", "image", "svg"] }
 
 [features]
-default = ["markdown", "iced-wgpu", "iced-tiny-skia", "iced-tokio", "iced-windowing"]
+default = ["markdown"]
 markdown = ["dep:comrak"]
-iced-wgpu = ["iced/wgpu"]
-iced-tiny-skia = ["iced/tiny-skia"]
-iced-tokio = ["iced/tokio"]
-iced-windowing = ["iced/x11", "iced/wayland"]
 
 [[example]]
 name = "hello"

@@ -85,15 +85,8 @@ The resulting DOM is rendered **directly to `iced` widgets** using a custom rend
 
 ## Crate Features
 
-All enabled by default
-
-- `markdown` : Adds markdown support alongside HTML.
+- `markdown` (_enabled by default_): Adds markdown support alongside HTML.
   Disable this if you want HTML-only support, or a lighter program.
-- Built-in iced features (can be disabled if you wish)
-  - `iced-wgpu` : wgpu rendering backend
-  - `iced-tiny-skia` : tiny-skia rendering backend
-  - `iced-tokio` : tokio async runtime
-  - `iced-windowing` : x11 and wayland backends
 
 ## TODO
 

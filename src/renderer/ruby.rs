@@ -1,4 +1,3 @@
-use iced::widget;
 use markup5ever_rcdom::{Node, NodeData};
 
 use crate::{
@@ -61,7 +60,7 @@ where
 
                     let unit = RenderedSpan::Elem(
                         widget::column![ann_block.render(), u.base.render()]
-                            .align_x(iced::Alignment::Center)
+                            .align_x(iced_core::Alignment::Center)
                             .into(),
                         Emp::NonEmpty,
                     );

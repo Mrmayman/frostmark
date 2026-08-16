@@ -1,7 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
 use html5ever::{ParseOpts, tendril::TendrilSink};
-use iced::widget;
 use markup5ever_rcdom::RcDom;
 
 use crate::structs::{UpdateMsg, UpdateMsgKind};

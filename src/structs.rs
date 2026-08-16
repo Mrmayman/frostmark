@@ -1,10 +1,8 @@
 use std::{ops::Add, sync::Arc};
 
 use bitflags::bitflags;
-use iced::{
-    Element, Font,
-    widget::{self, text_editor},
-};
+use iced_core::{Alignment, Element, Font};
+use widget::{Renderer, text_editor};
 
 use crate::state::MarkState;
 
@@ -40,7 +38,7 @@ pub enum ChildAlignment {
     Right,
 }
 
-impl From<ChildAlignment> for iced::Alignment {
+impl From<ChildAlignment> for Alignment {
     fn from(val: ChildAlignment) -> Self {
         match val {
             ChildAlignment::Center => Self::Center,
@@ -79,7 +77,8 @@ pub enum UpdateMsgKind {
 }
 
 type FClickLink<M> = Box<dyn Fn(String) -> M>;
-type FDrawImage<'a, M, T> = Box<dyn Fn(ImageInfo) -> Element<'static, M, T> + 'a>;
+type FDrawImage<'a, M, T> =
+    Box<dyn Fn(ImageInfo) -> iced_core::Element<'static, M, T, Renderer> + 'a>;
 type FUpdate<M> = Arc<dyn Fn(UpdateMsg) -> M>;
 pub(crate) type FStyleLinkButton<T> =
     Arc<dyn Fn(&T, widget::button::Status) -> widget::button::Style + 'static>;
@@ -103,7 +102,7 @@ pub(crate) type FStyleLinkButton<T> =
 /// To render this, call `Into<iced::Element<_>>`.
 ///
 /// There are many methods you can call on this to customize its behavior.
-pub struct MarkWidget<'a, Message, Theme = iced::Theme> {
+pub struct MarkWidget<'a, Message, Theme = widget::Theme> {
     pub(crate) state: &'a MarkState,
 
     pub(crate) font: Font,
@@ -171,7 +170,7 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     /// although you can fine-tune their relative scale
     /// using [`MarkWidget::heading_scale`].
     #[must_use]
-    pub fn text_size(mut self, size: impl Into<iced::Pixels>) -> Self {
+    pub fn text_size(mut self, size: impl Into<iced_core::Pixels>) -> Self {
         self.text_size = size.into().0;
         self
     }
@@ -258,7 +257,7 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     #[must_use]
     pub fn on_drawing_image(
         mut self,
-        f: impl Fn(ImageInfo) -> Element<'static, M, T> + 'a,
+        f: impl Fn(ImageInfo) -> Element<'static, M, T, Renderer> + 'a,
     ) -> Self {
         self.fn_drawing_image = Some(Box::new(f));
         self
@@ -373,7 +372,7 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
 #[derive(Default)]
 pub enum RenderedSpan<'a, M, T> {
     Spans(Vec<widget::text::Span<'a, M, Font>>),
-    Elem(Element<'a, M, T>, Emp),
+    Elem(Element<'a, M, T, Renderer>, Emp),
     #[default]
     None,
 }
@@ -407,7 +406,7 @@ where
     }
 
     // btw it supports clone so it's fine if we dont ref
-    pub fn render(self) -> Element<'a, M, T> {
+    pub fn render(self) -> Element<'a, M, T, Renderer> {
         match self {
             RenderedSpan::Spans(spans) => widget::rich_text(spans).on_link_click(|n| n).into(),
             RenderedSpan::Elem(element, _) => element,
@@ -468,7 +467,7 @@ impl<'a, M, T, E> From<E> for RenderedSpan<'a, M, T>
 where
     M: Clone,
     T: widget::text::Catalog + 'a,
-    E: Into<Element<'a, M, T>>,
+    E: Into<Element<'a, M, T, Renderer>>,
 {
     fn from(value: E) -> Self {
         Self::Elem(value.into(), Emp::NonEmpty)

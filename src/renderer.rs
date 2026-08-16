@@ -1,4 +1,4 @@
-use iced::{Element, Font, Length, Padding, widget};
+use iced_core::{Alignment, Color, Element, Font, Length, Padding, font};
 use markup5ever_rcdom::{Node, NodeData};
 
 use crate::{
@@ -78,10 +78,10 @@ where
                         t = t.font({
                             let mut f = self.font;
                             if data.flags.contains(ChildDataFlags::BOLD) {
-                                f.weight = iced::font::Weight::Bold;
+                                f.weight = font::Weight::Bold;
                             }
                             if data.flags.contains(ChildDataFlags::ITALIC) {
-                                f.style = iced::font::Style::Italic;
+                                f.style = font::Style::Italic;
                             }
                             f
                         });
@@ -95,7 +95,7 @@ where
                             let highlight_color = self
                                 .style
                                 .and_then(|n| n.highlight_color)
-                                .unwrap_or_else(|| iced::Color::from_rgb8(0xF7, 0xD8, 0x4B));
+                                .unwrap_or_else(|| Color::from_rgb8(0xF7, 0xD8, 0x4B));
                             t = t.background(highlight_color);
                         }
                         t
@@ -182,7 +182,7 @@ where
                 }
                 kind => RenderedSpan::Spans(vec![
                     widget::span(format!("<input type={kind} (TODO)>")).font(Font {
-                        weight: iced::font::Weight::Bold,
+                        weight: font::Weight::Bold,
                         ..self.font
                     }),
                 ]),
@@ -211,13 +211,13 @@ where
             "table" => self.draw_table(node, data),
 
             _ => RenderedSpan::Spans(vec![widget::span(format!("<{name} (TODO)>")).font(Font {
-                weight: iced::font::Weight::Bold,
+                weight: font::Weight::Bold,
                 ..self.font
             })]),
         };
 
         if let (true, Some(align)) = (block_element, data.alignment) {
-            let align: iced::Alignment = align.into();
+            let align: Alignment = align.into();
             widget::column![e.render()]
                 .width(Length::Fill)
                 .align_x(align)
@@ -323,7 +323,7 @@ where
         let link_col = self
             .style
             .and_then(|n| n.link_color)
-            .unwrap_or_else(|| iced::Color::from_rgb8(0x5A, 0x6B, 0x9E));
+            .unwrap_or_else(|| Color::from_rgb8(0x5A, 0x6B, 0x9E));
 
         let children = self.render_children(node, data);
 
@@ -557,7 +557,8 @@ fn is_block_element(node: &Node) -> bool {
     )
 }
 
-impl<'a, M: Clone + 'static, T: ValidTheme + 'a> From<MarkWidget<'a, M, T>> for Element<'a, M, T>
+impl<'a, M: Clone + 'static, T: ValidTheme + 'a> From<MarkWidget<'a, M, T>>
+    for Element<'a, M, T, widget::Renderer>
 where
     <T as widget::button::Catalog>::Class<'a>: From<widget::button::StyleFn<'a, T>>,
 {

@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use iced::{Length, widget};
+use iced_core::{Alignment, Length};
 use markup5ever_rcdom::{Node, NodeData};
 
 use crate::{
@@ -66,7 +66,7 @@ where
             }
         }
 
-        let body: iced::Element<'a, M, T> = widget::column(
+        let body: iced_core::Element<'a, M, T, widget::Renderer> = widget::column(
             body_rows
                 .into_iter()
                 .map(|row| draw_row(row, &column_alignments).into()),
@@ -129,7 +129,7 @@ fn make_cell<'a, M: Clone + 'static, T: ValidTheme + 'a>(
     content: RenderedSpan<'a, M, T>,
     align: Option<ChildAlignment>,
 ) -> widget::Column<'a, M, T> {
-    let alignment: iced::Alignment = align.map_or(iced::Alignment::Start, ChildAlignment::into);
+    let alignment: Alignment = align.map_or(Alignment::Start, ChildAlignment::into);
 
     widget::column![content.render()]
         .align_x(alignment)

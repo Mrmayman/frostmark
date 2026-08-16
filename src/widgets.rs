@@ -1,8 +1,8 @@
-use iced::{Element, Font, Length, advanced, widget};
+use iced_core::{Element, Font, Length};
 
 use crate::structs::FStyleLinkButton;
 
-pub fn link<'a, M: 'a, T, R: advanced::Renderer + 'a, F>(
+pub fn link<'a, M: 'a, T, R: iced_core::Renderer + 'a, F>(
     e: impl Into<Element<'a, M, T, R>>,
     url: &str,
     msg: Option<&F>,
@@ -33,7 +33,7 @@ where
     e.link_maybe(msg.map(|n| n(url)))
 }
 
-pub fn underline<'a, M: 'a, T: widget::rule::Catalog + 'a, R: advanced::Renderer + 'a>(
+pub fn underline<'a, M: 'a, T: widget::rule::Catalog + 'a, R: iced_core::Renderer + 'a>(
     e: impl Into<Element<'a, M, T, R>>,
 ) -> widget::Stack<'a, M, T, R> {
     widget::stack!(
