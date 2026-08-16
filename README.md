@@ -99,13 +99,13 @@ All enabled by default
 
 - Support for more elements (eg: superscript)
 - Fix `<ruby>` edge cases
-- (Maybe) support for CSS?
+- (Maybe) Switch to custom widget renderer for efficiency gains
 
 ---
 
 | Version | iced | MSRV |
 |:-:|:-:|:-:|
-| 0.3 | **0.14** | **1.88** |
+| 0.3.x | **0.14** | **1.88** |
 | 0.2 | 0.13 | 1.82 |
 | 0.1 | 0.13 | 1.82 |
 
