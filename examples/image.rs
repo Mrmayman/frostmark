@@ -96,7 +96,7 @@ impl App {
                         // but they are possible to implement.
                         // - Check if url ends with ".svg"
                         // - Download to `widget::svg::Handle` and have a second HashMap
-                        // - Usse the same logic elsewhere
+                        // - Uses the same logic elsewhere
 
                         if let Some(image) = self.images.get(info.url).cloned() {
                             let mut img = widget::image(image);

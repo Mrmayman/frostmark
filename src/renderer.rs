@@ -60,7 +60,7 @@ where
                 let size = calc_size(self.text_size, scaling, self.heading_scale);
 
                 if data.flags.contains(ChildDataFlags::MONOSPACE) {
-                    self.codeblock(
+                    self.code_block(
                         text.to_string(),
                         size,
                         !data.flags.contains(ChildDataFlags::KEEP_WHITESPACE),
@@ -239,20 +239,20 @@ where
             let regular_children =
                 self.render_children(node, data.insert(ChildDataFlags::SKIP_SUMMARY));
 
-            let umsg = UpdateMsg {
+            let msg = UpdateMsg {
                 kind: UpdateMsgKind::DetailsToggle(self.current_dropdown_id, !state),
             };
 
             let link = if let RenderedSpan::Spans(n) = summary {
                 RenderedSpan::Spans(
                     n.into_iter()
-                        .map(|n| n.link(update(umsg.clone())).underline(true))
+                        .map(|n| n.link(update(msg.clone())).underline(true))
                         .collect(),
                 )
                 .render()
             } else {
                 widget::mouse_area(underline(summary.render()))
-                    .on_press(update(umsg))
+                    .on_press(update(msg))
                     .into()
             };
 
@@ -447,7 +447,7 @@ where
         }
     }
 
-    fn codeblock(&self, code: String, size: f32, inline: bool) -> RenderedSpan<'a, M, T> {
+    fn code_block(&self, code: String, size: f32, inline: bool) -> RenderedSpan<'a, M, T> {
         if let (false, Some(state), Some(select)) = (
             inline,
             self.state.selection_state.get(&code),

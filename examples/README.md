@@ -41,7 +41,7 @@ cargo run --example image --features="iced/image"
 
 # Large Readme
 
-Renders two large READMEs:
+Renders two large README's:
 - One being a custom test page that covers all available formatting features
 - One being an example README of a large project ([QuantumLauncher](https://github.com/Mrmayman/quantumlauncher))
 
