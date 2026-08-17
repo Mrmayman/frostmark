@@ -73,7 +73,7 @@ const YOUR_TEXT: &str = "Hello from **markdown** and <b>HTML</b>!";
 
 </details>
 
-**Note:** Markdown support is optional and you can disable the `markdown`
+**Note:** Markdown support is optional, and you can disable the `markdown`
 feature to have more lightweight, HTML-only support.
 
 ## How does this work
@@ -96,11 +96,11 @@ The resulting DOM is rendered **directly to `iced` widgets** using a custom rend
 
 ---
 
-| Version | iced | MSRV |
-|:-:|:-:|:-:|
-| 0.3.x | **0.14** | **1.88** |
-| 0.2 | 0.13 | 1.82 |
-| 0.1 | 0.13 | 1.82 |
+| Version |   iced   |   MSRV   |
+|:-------:|:--------:|:--------:|
+|  0.3.x  | **0.14** | **1.88** |
+|   0.2   |   0.13   |   1.82   |
+|   0.1   |   0.13   |   1.82   |
 
 # Contributing
 

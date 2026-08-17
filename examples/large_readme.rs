@@ -79,7 +79,7 @@ impl App {
         Task::none()
     }
 
-    fn view<'a>(&'a self) -> Element<'a, Message> {
+    fn view(&self) -> Element<'_, Message> {
         let page_selector = widget::row![
             "Page:",
             widget::pick_list(Page::ALL, Some(self.page), |s| Message::ChangePage(s))

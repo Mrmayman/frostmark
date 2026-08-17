@@ -41,9 +41,9 @@ where
 {
     pub(crate) fn traverse_node(&mut self, node: &Node, data: ChildData) -> RenderedSpan<'a, M, T> {
         match &node.data {
-            markup5ever_rcdom::NodeData::Document => self.render_children(node, data),
-            markup5ever_rcdom::NodeData::Text { contents } => self.render_text(data, contents),
-            markup5ever_rcdom::NodeData::Element { name, attrs, .. } => {
+            NodeData::Document => self.render_children(node, data),
+            NodeData::Text { contents } => self.render_text(data, contents),
+            NodeData::Element { name, attrs, .. } => {
                 self.render_html_inner(name, attrs, node, data)
             }
             _ => RenderedSpan::None,
@@ -323,8 +323,7 @@ where
                         width,
                         height,
                         expand: fills_portion,
-                    })
-                    .into(),
+                    }),
                     ElemProps {
                         is_empty: false,
                         fills_portion,
@@ -512,6 +511,7 @@ fn get_attr_size(attrs: &[html5ever::Attribute], attr_name: &str) -> Option<Leng
     let attr = get_attr(attrs, attr_name)?;
     if let Some(percent) = attr.strip_suffix('%') {
         let percent = percent.parse::<f32>().ok()?.clamp(0.0, 100.0);
+        #[allow(clippy::cast_sign_loss)] // Clamped anyway
         return Some(Length::FillPortion((percent * 100.0) as u16));
     }
     Some(Length::Fixed(attr.parse::<f32>().ok()?))

@@ -23,7 +23,6 @@ widget = { version = "0.14", package = "iced_widget" }
 
 [dev-dependencies] # For the examples
 open = "5"
-tokio = "1"
 reqwest = { version = "0.13" }
 iced = { version = "0.14", default-features = false, features = ["wgpu", "tiny-skia", "tokio", "x11", "wayland", "image", "svg"] }
 

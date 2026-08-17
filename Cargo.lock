@@ -1021,7 +1021,6 @@ dependencies = [
  "markup5ever_rcdom",
  "open",
  "reqwest",
- "tokio",
 ]
 
 [[package]]

@@ -3,11 +3,7 @@ use std::collections::{HashMap, HashSet};
 use frostmark::{MarkState, MarkWidget};
 use iced::{
     Element, Length, Task,
-    widget::{
-        self,
-        image::{self, Handle},
-        text_editor::Content,
-    },
+    widget::{self, image::Handle, text_editor::Content},
 };
 
 use crate::image_loader::Image;
@@ -36,7 +32,7 @@ struct App {
     state: MarkState,
     editor: Content,
 
-    images: HashMap<String, image::Handle>,
+    images: HashMap<String, Handle>,
     images_in_progress: HashSet<String>,
 }
 
@@ -69,7 +65,6 @@ impl App {
         Task::none()
     }
 
-    #[must_use]
     fn reparse(&mut self) -> Task<Message> {
         self.state = MarkState::with_html_and_markdown(&self.editor.text());
         self.download_images()
@@ -85,7 +80,7 @@ impl App {
         }))
     }
 
-    fn view<'a>(&'a self) -> Element<'a, Message> {
+    fn view(&self) -> Element<'_, Message> {
         let editor = widget::text_editor(&self.editor)
             .on_action(Message::EditedText)
             .height(Length::Fill);
@@ -96,11 +91,12 @@ impl App {
                 MarkWidget::new(&self.state)
                     .on_updating_state(Message::UpdateState)
                     .on_drawing_image(|info| {
-                        // Note: This example doesn't handle SVG images
+                        // Note: This example doesn't handle SVG images,
                         // but they are possible to implement.
                         // - Check if url ends with ".svg"
                         // - Download to `widget::svg::Handle` and have a second HashMap
                         // - Uses the same logic elsewhere
+                        // - If img is svg, use `widget::svg` else `widget::image`
 
                         if let Some(image) = self.images.get(info.url).cloned() {
                             widget::image(image)

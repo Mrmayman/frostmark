@@ -78,7 +78,7 @@ pub enum UpdateMsgKind {
 
 type FClickLink<M> = Box<dyn Fn(String) -> M>;
 type FDrawImage<'a, M, T> =
-    Box<dyn Fn(ImageInfo) -> iced_core::Element<'static, M, T, Renderer> + 'a>;
+    Box<dyn Fn(ImageInfo) -> Element<'static, M, T, Renderer> + 'a>;
 type FUpdate<M> = Arc<dyn Fn(UpdateMsg) -> M>;
 pub(crate) type FStyleLinkButton<T> =
     Arc<dyn Fn(&T, widget::button::Status) -> widget::button::Style + 'static>;
@@ -97,8 +97,8 @@ pub(crate) type FStyleLinkButton<T> =
 /// # ; } }
 /// ```
 ///
-/// You can put this inside a [`iced::widget::Container`]
-/// or [`iced::widget::Column`] or anywhere you like.
+/// You can put this inside a [`widget::Container`]
+/// or [`widget::Column`] or anywhere you like.
 /// To render this, call `Into<iced::Element<_>>`.
 ///
 /// There are many methods you can call on this to customize its behavior.
@@ -426,7 +426,7 @@ where
 
         let mut wrap = true;
 
-        for item in iter.into_iter() {
+        for item in iter {
             match item {
                 RenderedSpan::Spans(spans) => curr_spans.extend(spans),
                 RenderedSpan::Elem(elem, e) => {
@@ -493,15 +493,15 @@ pub struct ImageInfo<'a> {
     pub url: &'a str,
     /// Width of the image in `iced` layout
     ///
-    /// Maps to [`iced::widget::Image::width`]
+    /// Maps to [`widget::Image::width`]
     pub width: Length,
     /// Height of the image in `iced` layout
     ///
-    /// Maps to [`iced::widget::Image::height`]
+    /// Maps to [`widget::Image::height`]
     pub height: Length,
     /// Whether the image should expand to fill the available space
     ///
-    /// Maps to [`iced::widget::Image::expand`]
+    /// Maps to [`widget::Image::expand`]
     pub expand: bool,
 }
 
