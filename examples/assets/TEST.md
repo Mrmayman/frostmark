@@ -31,6 +31,7 @@ Image as <img src="https://github.com/Mrmayman/quantumlauncher/raw/main/assets/i
 > > Nested Block Quote
 > >
 > > ```
+> > // Here's a code block
 > > #include <cstdio>
 > >
 > > int main() {
