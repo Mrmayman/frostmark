@@ -1,9 +1,12 @@
+use std::cell::RefCell;
+
+use html5ever::tendril;
 use iced_core::{Alignment, Color, Element, Font, Length, Padding, font};
 use markup5ever_rcdom::{Node, NodeData};
 
 use crate::{
     structs::{
-        ChildAlignment, ChildDataFlags, ImageInfo, MarkWidget, RenderedSpan, UpdateMsg,
+        ChildAlignment, ChildDataFlags, ElemProps, ImageInfo, MarkWidget, RenderedSpan, UpdateMsg,
         UpdateMsgKind,
     },
     widgets::{link, link_text, underline},
@@ -39,69 +42,7 @@ where
     pub(crate) fn traverse_node(&mut self, node: &Node, data: ChildData) -> RenderedSpan<'a, M, T> {
         match &node.data {
             markup5ever_rcdom::NodeData::Document => self.render_children(node, data),
-
-            markup5ever_rcdom::NodeData::Text { contents } => {
-                fn calc_size(text_size: f32, scaling: f32, factor: f32) -> f32 {
-                    text_size * (1.0 + ((scaling - 1.0) * factor))
-                }
-
-                let text = contents.borrow();
-                let weight = data.heading_weight;
-                let scaling = match weight {
-                    1 => 1.8,
-                    2 => 1.5,
-                    3 => 1.25,
-                    4 => 1.15,
-                    5 => 0.875,
-                    6 => 0.75,
-                    7 => 0.625,
-                    _ => 1.0,
-                };
-                let size = calc_size(self.text_size, scaling, self.heading_scale);
-
-                if data.flags.contains(ChildDataFlags::MONOSPACE) {
-                    self.code_block(
-                        text.to_string(),
-                        size,
-                        !data.flags.contains(ChildDataFlags::KEEP_WHITESPACE),
-                    )
-                } else {
-                    let mut t =
-                        widget::span(if data.flags.contains(ChildDataFlags::KEEP_WHITESPACE) {
-                            text.to_string()
-                        } else {
-                            clean_whitespace(&text)
-                        })
-                        .size(size);
-
-                    RenderedSpan::Spans(vec![{
-                        t = t.font({
-                            let mut f = self.font;
-                            if data.flags.contains(ChildDataFlags::BOLD) {
-                                f.weight = font::Weight::Bold;
-                            }
-                            if data.flags.contains(ChildDataFlags::ITALIC) {
-                                f.style = font::Style::Italic;
-                            }
-                            f
-                        });
-                        if data.flags.contains(ChildDataFlags::STRIKETHROUGH) {
-                            t = t.strikethrough(true);
-                        }
-                        if data.flags.contains(ChildDataFlags::UNDERLINE) {
-                            t = t.underline(true);
-                        }
-                        if data.flags.contains(ChildDataFlags::HIGHLIGHT) {
-                            let highlight_color = self
-                                .style
-                                .and_then(|n| n.highlight_color)
-                                .unwrap_or_else(|| Color::from_rgb8(0xF7, 0xD8, 0x4B));
-                            t = t.background(highlight_color);
-                        }
-                        t
-                    }])
-                }
-            }
+            markup5ever_rcdom::NodeData::Text { contents } => self.render_text(data, contents),
             markup5ever_rcdom::NodeData::Element { name, attrs, .. } => {
                 self.render_html_inner(name, attrs, node, data)
             }
@@ -109,10 +50,76 @@ where
         }
     }
 
+    fn render_text(
+        &mut self,
+        data: ChildData,
+        contents: &RefCell<tendril::Tendril<tendril::fmt::UTF8>>,
+    ) -> RenderedSpan<'a, M, T> {
+        fn calc_size(text_size: f32, scaling: f32, factor: f32) -> f32 {
+            text_size * (1.0 + ((scaling - 1.0) * factor))
+        }
+
+        let text = contents.borrow();
+        let weight = data.heading_weight;
+        let scaling = match weight {
+            1 => 1.8,
+            2 => 1.5,
+            3 => 1.25,
+            4 => 1.15,
+            5 => 0.875,
+            6 => 0.75,
+            7 => 0.625,
+            _ => 1.0,
+        };
+        let size = calc_size(self.text_size, scaling, self.heading_scale);
+
+        if data.flags.contains(ChildDataFlags::MONOSPACE) {
+            self.code_block(
+                text.to_string(),
+                size,
+                !data.flags.contains(ChildDataFlags::KEEP_WHITESPACE),
+            )
+        } else {
+            let mut t = widget::span(if data.flags.contains(ChildDataFlags::KEEP_WHITESPACE) {
+                text.to_string()
+            } else {
+                clean_whitespace(&text)
+            })
+            .size(size);
+
+            RenderedSpan::Spans(vec![{
+                t = t.font({
+                    let mut f = self.font;
+                    if data.flags.contains(ChildDataFlags::BOLD) {
+                        f.weight = font::Weight::Bold;
+                    }
+                    if data.flags.contains(ChildDataFlags::ITALIC) {
+                        f.style = font::Style::Italic;
+                    }
+                    f
+                });
+                if data.flags.contains(ChildDataFlags::STRIKETHROUGH) {
+                    t = t.strikethrough(true);
+                }
+                if data.flags.contains(ChildDataFlags::UNDERLINE) {
+                    t = t.underline(true);
+                }
+                if data.flags.contains(ChildDataFlags::HIGHLIGHT) {
+                    let highlight_color = self
+                        .style
+                        .and_then(|n| n.highlight_color)
+                        .unwrap_or_else(|| Color::from_rgb8(0xF7, 0xD8, 0x4B));
+                    t = t.background(highlight_color);
+                }
+                t
+            }])
+        }
+    }
+
     fn render_html_inner(
         &mut self,
         name: &html5ever::QualName,
-        attrs: &std::cell::RefCell<Vec<html5ever::Attribute>>,
+        attrs: &RefCell<Vec<html5ever::Attribute>>,
         node: &Node,
         mut data: ChildData,
     ) -> RenderedSpan<'a, M, T> {
@@ -303,11 +310,26 @@ where
         if let Some(attr) = attrs.iter().find(|attr| &*attr.name.local == "src") {
             let url = &*attr.value;
 
-            let width = get_attr_num(attrs, "width");
-            let height = get_attr_num(attrs, "height");
+            let width = get_attr_size(attrs, "width").unwrap_or(Length::Shrink);
+            let height = get_attr_size(attrs, "height").unwrap_or(Length::Shrink);
+
+            let fills_portion =
+                matches!(width, Length::FillPortion(_)) || matches!(height, Length::FillPortion(_));
 
             if let Some(func) = self.fn_drawing_image.as_deref() {
-                return func(ImageInfo { url, width, height }).into();
+                return RenderedSpan::Elem(
+                    func(ImageInfo {
+                        url,
+                        width,
+                        height,
+                        expand: fills_portion,
+                    })
+                    .into(),
+                    ElemProps {
+                        is_empty: false,
+                        fills_portion,
+                    },
+                );
             }
         }
         // Error, no `src` tag in `<img>`
@@ -381,7 +403,7 @@ where
         let children = node.children.borrow();
 
         let mut column = Vec::new();
-        let mut row = RenderedSpan::None;
+        let mut row = Vec::new();
 
         let mut skipped_summary = false;
         let original_start = data.li_ordered_number;
@@ -407,25 +429,26 @@ where
             if let Some(base) = original_start {
                 data.li_ordered_number = Some(base + i);
             }
+            // This is where all the magic happens
             let element = self.traverse_node(item, data);
 
             if !data.flags.contains(ChildDataFlags::INSIDE_RUBY) && is_block_element(item) {
                 if !row.is_empty() {
-                    let mut old_row = RenderedSpan::None;
+                    let mut old_row = Vec::new();
                     std::mem::swap(&mut row, &mut old_row);
-                    column.push(old_row);
+                    column.push(RenderedSpan::from_iter(old_row));
                 }
 
                 column.push(element);
             } else {
-                row = row + element;
+                row.push(element);
             }
 
             i += 1;
         }
 
         if !row.is_empty() {
-            column.push(row);
+            column.push(RenderedSpan::from_iter(row));
         }
 
         let len = column.len();
@@ -485,8 +508,13 @@ fn alignment_read(data: &mut ChildData, attrs: &[html5ever::Attribute]) {
     }
 }
 
-fn get_attr_num(attrs: &[html5ever::Attribute], attr_name: &str) -> Option<f32> {
-    get_attr(attrs, attr_name).and_then(|n| n.parse::<f32>().ok())
+fn get_attr_size(attrs: &[html5ever::Attribute], attr_name: &str) -> Option<Length> {
+    let attr = get_attr(attrs, attr_name)?;
+    if let Some(percent) = attr.strip_suffix('%') {
+        let percent = percent.parse::<f32>().ok()?.clamp(0.0, 100.0);
+        return Some(Length::FillPortion((percent * 100.0) as u16));
+    }
+    Some(Length::Fixed(attr.parse::<f32>().ok()?))
 }
 
 fn get_attr<'a>(attrs: &'a [html5ever::Attribute], attr_name: &str) -> Option<&'a str> {

@@ -3,7 +3,7 @@ use markup5ever_rcdom::{Node, NodeData};
 use crate::{
     MarkWidget, RubyMode,
     renderer::{ValidTheme, is_node_useless},
-    structs::{ChildData, Emp, RenderedSpan},
+    structs::{ChildData, ElemProps, RenderedSpan},
 };
 
 struct RubyUnit<'a, M, T> {
@@ -32,42 +32,28 @@ where
 
     fn draw_ruby_units(&mut self, units: Vec<RubyUnit<'a, M, T>>) -> RenderedSpan<'a, M, T> {
         match self.ruby_mode {
-            RubyMode::Ignore => {
-                // only base content
-                units
-                    .into_iter()
-                    .fold(RenderedSpan::None, |acc, u| acc + u.base)
-            }
+            // only base content
+            RubyMode::Ignore => RenderedSpan::from_iter(units.into_iter().map(|n| n.base)),
+            // inline concat: base + annotations
+            RubyMode::Fallback => RenderedSpan::from_iter(units.into_iter().map(|u| {
+                let ann = RenderedSpan::from_iter(u.annotations);
+                RenderedSpan::from_iter([u.base, ann])
+            })),
 
-            RubyMode::Fallback => {
-                // inline concat: base + annotations
-                units.into_iter().fold(RenderedSpan::None, |acc, u| {
-                    let ann = u
-                        .annotations
-                        .into_iter()
-                        .fold(RenderedSpan::None, |a, b| a + b);
-                    acc + u.base + ann
-                })
-            }
+            // each unit is annotation above base
+            RubyMode::Full => RenderedSpan::from_iter(units.into_iter().map(|u| {
+                let ann_block = RenderedSpan::from_iter(u.annotations);
 
-            RubyMode::Full => {
-                // each unit is annotation above base
-                units.into_iter().fold(RenderedSpan::None, |acc, u| {
-                    let ann_block = u
-                        .annotations
-                        .into_iter()
-                        .fold(RenderedSpan::None, |a, b| a + b);
-
-                    let unit = RenderedSpan::Elem(
-                        widget::column![ann_block.render(), u.base.render()]
-                            .align_x(iced_core::Alignment::Center)
-                            .into(),
-                        Emp::NonEmpty,
-                    );
-
-                    acc + unit
-                })
-            }
+                RenderedSpan::Elem(
+                    widget::column![ann_block.render(), u.base.render()]
+                        .align_x(iced_core::Alignment::Center)
+                        .into(),
+                    ElemProps {
+                        is_empty: false,
+                        fills_portion: false,
+                    },
+                )
+            })),
         }
     }
 

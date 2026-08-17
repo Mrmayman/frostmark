@@ -140,3 +140,10 @@ Right aligned columns
     <ruby>漢 字 <rt>かん</rt> <rt>じ</rt> </ruby><br>
     <ruby> <span> 漢<rt>かん</rt> </span></ruby>
 </details>
+
+<details>
+    <summary>Image percentage size (20%, 30%, 50%)</summary>
+    <img src="https://github.com/Mrmayman/quantumlauncher/raw/main/assets/icon/ql_logo.png" width="20%" />
+    <img src="https://github.com/Mrmayman/quantumlauncher/raw/main/assets/icon/ql_logo.png" width="30%" />
+    <img src="https://github.com/Mrmayman/quantumlauncher/raw/main/assets/icon/ql_logo.png" width="50%" />
+</details>

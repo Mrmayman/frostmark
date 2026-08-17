@@ -3,7 +3,11 @@ use std::collections::{HashMap, HashSet};
 use frostmark::{MarkState, MarkWidget};
 use iced::{
     Element, Length, Task,
-    widget::{self, image::{self, Handle}, text_editor::Content},
+    widget::{
+        self,
+        image::{self, Handle},
+        text_editor::Content,
+    },
 };
 
 use crate::image_loader::Image;
@@ -99,16 +103,16 @@ impl App {
                         // - Uses the same logic elsewhere
 
                         if let Some(image) = self.images.get(info.url).cloned() {
-                            let mut img = widget::image(image);
-                            if let Some(w) = info.width {
-                                img = img.width(w);
-                            }
-                            if let Some(h) = info.height {
-                                img = img.height(h);
-                            }
-                            img.into()
+                            widget::image(image)
+                                .width(info.width)
+                                .height(info.height)
+                                .expand(info.expand)
+                                .into()
                         } else {
-                            "...".into()
+                            widget::text("...")
+                                .width(info.width)
+                                .height(info.height)
+                                .into()
                         }
                     })
             )

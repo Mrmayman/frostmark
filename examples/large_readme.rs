@@ -109,23 +109,16 @@ impl App {
 
     fn draw_image(&self, info: frostmark::ImageInfo) -> Element<'static, Message> {
         if let Some(image) = self.images_normal.get(info.url).cloned() {
-            let mut img = widget::image(image);
-            if let Some(w) = info.width {
-                img = img.width(w);
-            }
-            if let Some(h) = info.height {
-                img = img.height(h);
-            }
-            img.into()
+            widget::image(image)
+                .width(info.width)
+                .height(info.height)
+                .expand(info.expand)
+                .into()
         } else if let Some(image) = self.images_svg.get(info.url).cloned() {
-            let mut img = widget::svg(image);
-            if let Some(w) = info.width {
-                img = img.width(w);
-            }
-            if let Some(h) = info.height {
-                img = img.height(h);
-            }
-            img.into()
+            widget::svg(image)
+                .width(info.width)
+                .height(info.height)
+                .into()
         } else {
             "...".into()
         }

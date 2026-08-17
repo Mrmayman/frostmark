@@ -1,7 +1,7 @@
-use std::{ops::Add, sync::Arc};
+use std::sync::Arc;
 
 use bitflags::bitflags;
-use iced_core::{Alignment, Element, Font};
+use iced_core::{Alignment, Element, Font, Length};
 use widget::{Renderer, text_editor};
 
 use crate::state::MarkState;
@@ -222,14 +222,11 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     ///     .on_drawing_image(|info| {
     ///         // Pseudocode example to give you an idea
     ///         if let Some(image) = self.cache.get(info.url) {
-    ///             let mut i = iced::widget::image(image.clone());
-    ///             if let Some(width) = info.width {
-    ///                 i = i.width(width);
-    ///             }
-    ///             if let Some(height) = info.height {
-    ///                 i = i.height(height);
-    ///             }
-    ///             i.into()
+    ///             iced::widget::image(image.clone())
+    ///                 .width(info.width)
+    ///                 .height(info.height)
+    ///                 .expand(info.expand)
+    ///                 .into()
     ///         } else {
     ///             widget::Column::new().into()
     ///         }
@@ -369,10 +366,16 @@ impl<'a, M: 'a, T: 'a> MarkWidget<'a, M, T> {
     }
 }
 
+#[derive(Debug)]
+pub struct ElemProps {
+    pub is_empty: bool,
+    pub fills_portion: bool,
+}
+
 #[derive(Default)]
 pub enum RenderedSpan<'a, M, T> {
     Spans(Vec<widget::text::Span<'a, M, Font>>),
-    Elem(Element<'a, M, T, Renderer>, Emp),
+    Elem(Element<'a, M, T, Renderer>, ElemProps),
     #[default]
     None,
 }
@@ -386,7 +389,7 @@ impl<M, T> std::fmt::Debug for RenderedSpan<'_, M, T> {
                     .entries(spans.iter().map(|n| &*n.text))
                     .finish()
             }
-            RenderedSpan::Elem(_, emp) => write!(f, "Rs::Elem({emp:?})"),
+            RenderedSpan::Elem(_, e) => write!(f, "Rs::Elem({e:?})"),
             RenderedSpan::None => write!(f, "Rs::None"),
         }
     }
@@ -400,65 +403,68 @@ where
     pub fn is_empty(&self) -> bool {
         match self {
             RenderedSpan::Spans(spans) => spans.is_empty(),
-            RenderedSpan::Elem(_, e) => matches!(e, Emp::Empty),
+            RenderedSpan::Elem(_, e) => e.is_empty,
             RenderedSpan::None => true,
         }
     }
 
-    // btw it supports clone so it's fine if we dont ref
     pub fn render(self) -> Element<'a, M, T, Renderer> {
         match self {
+            // It supports clone so it's fine if we don't ref
             RenderedSpan::Spans(spans) => widget::rich_text(spans).on_link_click(|n| n).into(),
             RenderedSpan::Elem(element, _) => element,
             RenderedSpan::None => widget::Column::new().into(),
         }
     }
-}
 
-impl<'a, M, T> Add for RenderedSpan<'a, M, T>
-where
-    M: Clone + 'static,
-    T: widget::text::Catalog + 'a,
-{
-    type Output = Self;
+    pub fn from_iter<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = Self>,
+    {
+        let mut elems = Vec::new();
+        let mut curr_spans = Vec::new();
 
-    fn add(self, rhs: Self) -> Self::Output {
-        use RenderedSpan as Rs;
-        match (self, rhs) {
-            (Rs::None, rhs) => rhs,
-            (lhs, Rs::None) => lhs,
+        let mut wrap = true;
 
-            (Rs::Spans(mut spans1), Rs::Spans(spans2)) => {
-                spans1.extend(spans2);
-                Rs::Spans(spans1)
+        for item in iter.into_iter() {
+            match item {
+                RenderedSpan::Spans(spans) => curr_spans.extend(spans),
+                RenderedSpan::Elem(elem, e) => {
+                    if !curr_spans.is_empty() {
+                        let spans = std::mem::take(&mut curr_spans);
+                        elems.push(widget::rich_text(spans).on_link_click(|n| n).into());
+                    }
+                    if !e.is_empty {
+                        elems.push(elem);
+                    }
+                    if e.fills_portion {
+                        wrap = false;
+                    }
+                }
+                RenderedSpan::None => {}
             }
+        }
 
-            (r @ Rs::Spans(_), Rs::Elem(element, e)) => Rs::Elem(
-                widget::row![r.render()]
-                    .push(e.has_something().then_some(element))
-                    .spacing(5)
-                    .wrap()
-                    .into(),
-                Emp::NonEmpty,
-            ),
-            (Rs::Elem(element, e), r @ Rs::Spans(_)) => Rs::Elem(
-                widget::Row::new()
-                    .push(e.has_something().then_some(element))
-                    .push(r.render())
-                    .spacing(5)
-                    .wrap()
-                    .into(),
-                Emp::NonEmpty,
-            ),
-            (Rs::Elem(e1, em1), Rs::Elem(e2, em2)) => Rs::Elem(
-                widget::Row::new()
-                    .push(em1.has_something().then_some(e1))
-                    .push(em2.has_something().then_some(e2))
-                    .spacing(5)
-                    .wrap()
-                    .into(),
-                Emp::NonEmpty,
-            ),
+        match (elems.is_empty(), curr_spans.is_empty()) {
+            (true, true) => RenderedSpan::None,
+            (true, false) => RenderedSpan::Spans(curr_spans),
+            (false, _) => {
+                if !curr_spans.is_empty() {
+                    elems.push(widget::rich_text(curr_spans).on_link_click(|n| n).into());
+                }
+                let row = widget::row(elems).spacing(5);
+                RenderedSpan::Elem(
+                    if wrap {
+                        row.wrap().into()
+                    } else {
+                        row.align_y(Alignment::End).into()
+                    },
+                    ElemProps {
+                        is_empty: false,
+                        fills_portion: false,
+                    },
+                )
+            }
         }
     }
 }
@@ -470,27 +476,13 @@ where
     E: Into<Element<'a, M, T, Renderer>>,
 {
     fn from(value: E) -> Self {
-        Self::Elem(value.into(), Emp::NonEmpty)
-    }
-}
-
-#[derive(Debug, Clone, Copy)]
-pub enum Emp {
-    #[allow(unused)]
-    Empty,
-    NonEmpty,
-}
-
-impl Emp {
-    pub fn is_empty(self) -> bool {
-        match self {
-            Emp::Empty => true,
-            Emp::NonEmpty => false,
-        }
-    }
-
-    pub fn has_something(self) -> bool {
-        !self.is_empty()
+        Self::Elem(
+            value.into(),
+            ElemProps {
+                is_empty: false,
+                fills_portion: false,
+            },
+        )
     }
 }
 
@@ -499,8 +491,18 @@ impl Emp {
 #[non_exhaustive]
 pub struct ImageInfo<'a> {
     pub url: &'a str,
-    pub width: Option<f32>,
-    pub height: Option<f32>,
+    /// Width of the image in `iced` layout
+    ///
+    /// Maps to [`iced::widget::Image::width`]
+    pub width: Length,
+    /// Height of the image in `iced` layout
+    ///
+    /// Maps to [`iced::widget::Image::height`]
+    pub height: Length,
+    /// Whether the image should expand to fill the available space
+    ///
+    /// Maps to [`iced::widget::Image::expand`]
+    pub expand: bool,
 }
 
 /// Controls how ruby annotations are rendered.
