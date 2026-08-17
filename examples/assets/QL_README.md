@@ -3,71 +3,44 @@ with which you can test the renderer.
 
 ---
 
-<div align="center">
+<!-- <div align="center"> -->
+<img align="left" style="width: 140px" width="140" src="https://github.com/Mrmayman/quantumlauncher/raw/main/assets/icon/ql_logo.png" />
 
-# <img src="https://github.com/Mrmayman/quantumlauncher/raw/main/assets/icon/ql_logo.png" style="height: 1.4em; vertical-align: middle;" /> QuantumLauncher
-
-## [Website](https://mrmayman.github.io/quantumlauncher) | [Discord](https://discord.gg/bWqRaSXar5) | [Changelogs](https://github.com/Mrmayman/quantumlauncher/tree/main/changelogs/)
+<b>QuantumLauncher</b> ([Website](https://mrmayman.github.io/quantumlauncher) | [Discord](https://discord.gg/bWqRaSXar5) | [Changelogs](https://github.com/Mrmayman/quantumlauncher/tree/main/changelogs/))
 
 ![GPL3 License](https://img.shields.io/github/license/Mrmayman/quantumlauncher)
 ![Downloads](https://img.shields.io/github/downloads/Mrmayman/quantumlauncher/total)
-![Discord Online](https://img.shields.io/discord/1280474064540012619?label=&labelColor=6A7EC2&logo=discord&logoColor=ffffff&color=7389D8)
 [![Made with iced](https://iced.rs/badge.svg)](https://github.com/iced-rs/iced)
+[![Discord Online](https://img.shields.io/discord/1280474064540012619?label=&labelColor=6A7EC2&logo=discord&logoColor=ffffff&color=7389D8)](https://discord.gg/bWqRaSXar5)
+[![Matrix Server](https://img.shields.io/matrix/quantumgroup:matrix.org)](https://matrix.to/#/#quantumgroup:matrix.org)
 
-A minimalistic Minecraft launcher for Windows, macOS and Linux.
+A simple, powerful, cross platform Minecraft launcher.
+<br><br>
 
-![Quantum Launcher running a Minecraft Instance](https://github.com/Mrmayman/quantumlauncher/raw/main/quantum_launcher.png)
-
-QuantumLauncher offers a lightweight and responsive experience.
-It's designed to be simple and easy to use, with a focus on performance and features.
+![Quantum Launcher running RL Craft modpack](https://github.com/Mrmayman/quantumlauncher/raw/main/quantum_launcher.png)
 
 # Features
 
-## Lightweight and responsive
-
-![](https://github.com/Mrmayman/quantumlauncher/raw/main/assets/screenshots/lightweight.png)
-
-## Install fabric, forge or optifine with ease
-
-![](https://github.com/Mrmayman/quantumlauncher/raw/main/assets/screenshots/install_loader.png)
-
-## Build in mod store to download your favorite mods
-
-![](https://github.com/Mrmayman/quantumlauncher/raw/main/assets/screenshots/mod_store.png)
-
-## Isolate your different game versions with instances!
-
-![](https://github.com/Mrmayman/quantumlauncher/raw/main/assets/screenshots/new.png)
-
-## Full support for old Minecraft versions, integrated with Omniarchive. Includes skin and sound fixes!
-
-![](https://github.com/Mrmayman/quantumlauncher/raw/main/assets/screenshots/old_mc.png)
-
-## Neatly package your mods into presets, and share it with your friends!
-
-![](https://github.com/Mrmayman/quantumlauncher/raw/main/assets/screenshots/presets.png)
-
-## Built in themes!
-
-![](https://github.com/Mrmayman/quantumlauncher/raw/main/assets/screenshots/themes.png)
-<br><br>
-
-</div>
+| | |
+|---|:--|
+| <img src="https://github.com/Mrmayman/quantumlauncher/raw/main/assets/screenshots/lightweight.png"> | <h2>Incredibly Lightweight</h2> Uses minimal CPU and RAM! Lighter than the vanilla launcher, common alternatives and even Task Manager! |
+| <img src="https://github.com/Mrmayman/quantumlauncher/raw/main/assets/screenshots/mod_store.png"> | <h2>Built-in mod store</h2> Install your favorite <b>mods</b> and <b>mod loaders</b> from the comfort of one window.<br><br>Isolate your game versions with instances, so clashes never happen! |
+| <img src="https://github.com/Mrmayman/quantumlauncher/raw/main/assets/screenshots/old_mc.png"> | <h2>Support for old Minecraft versions (via Omniarchive)</h2> Includes skin and sound fixes, and adds rare versions to the list |
+| <img src="https://github.com/Mrmayman/quantumlauncher/raw/main/assets/screenshots/mod_manage.png"> | Manage hundreds of mods conveniently!<br>Package and share them with friends. |
 
 # Downloads and Building
 
-You can download the stable version from the website linked above, or from the *Releases* button
+Download stable versions from [the website](https://mrmayman.github.io/quantumlauncher/#downloads), or from [Releases](http://github.com/Mrmayman/quantumlauncher/releases/latest)
 
-Or, you can compile the launcher to get the latest experimental version (with potentially broken and untested features).
-To compile the launcher:
+Or, compile the launcher to get the latest experimental version:
 
 ```sh
 git clone https://github.com/Mrmayman/quantumlauncher.git
-cd quantum-launcher
+cd quantumlauncher
 cargo run --release
 ```
 
-You can omit the `--release` flag for faster compile times, but *slightly* worse performance and MUCH larger build file
+You can omit the `--release` flag for faster compile times, but slightly worse performance and MUCH larger build file
 size.
 
 # Why QuantumLauncher?
@@ -78,142 +51,47 @@ size.
 What about the others? Well...
 
 - The official Minecraft launcher is slow, unstable, buggy and frustrating to use,
-  with barely any modding features.
-- Prism Launcher is a great launcher overall, but it does not support
-  offline accounts. Same for MultiMC.
-- Legacy Launcher isn't as feature rich as this
-- TLauncher is *suspected* to be malware
+  with barely any modding features
+- Legacy Launcher lacks *many* features
+- TLauncher is suspected to be malware
 
 # File Locations
 
-- On *Windows*, the launcher files are at `C:/Users/YOUR_USERNAME/AppData/Roaming/QuantumLauncher/`.
-- You probably won't see the `AppData` folder. Press Windows + R and paste this path, and hit enter.
-- On *Linux*, the launcher files are at `~/.local/share/QuantumLauncher/`. (`~` refers to your home directory).
+- **Windows**: `C:/Users/YOUR_USERNAME/AppData/Roaming/QuantumLauncher/`
+  - You probably won't see the `AppData` folder (hidden). Press Windows + R and paste this path, and hit enter
+- **macOS**: `/Users/YOURNAME/Library/Application Support/QuantumLauncher/`
+- **Linux/BSD**: `~/.local/share/QuantumLauncher/` (`~` refers to your home directory)
+
+Structure:
+
 - Instances located at `QuantumLauncher/instances/YOUR_INSTANCE/`
-- `.minecraft` located at `YOUR_INSTANCE/.minecraft/`.
-- Launcher logs are located at `QuantumLauncher/logs/`.
+  - `.minecraft` located at `YOUR_INSTANCE/.minecraft/`
+- Logs in `QuantumLauncher/logs/`
 
 <br>
 
-# To-do (in the future)
+# More info
 
-## Core
-
-- [x] Instance creation, deletion, renaming, launching
-- [x] Java/Game args editing
-- [x] Memory allocation editing
-- [x] Optional Microsoft login
-- [x] Integration with Omniarchive, old version support
-- [ ] Full controller, keyboard-navigation support in UI
-
-## Mods
-
-### Loaders
-
-- [x] Fabric
-- [x] Forge
-- [x] Optifine
-- [x] Quilt
-- [x] Neoforge
-- [ ] OptiForge
-- [ ] OptiFabric
-- [x] Jar Mods
-
-### Sources
-
-- [x] Modrinth mods
-- [x] Curseforge mods
-- [x] Modrinth modpacks
-- [x] Curseforge modpacks
-
-### Features
-
-- [x] Mod store
-- [x] Mod presets (packaging mods)
-- [x] Mod updater
-- [ ] Make mod updater incrementally load in (optimization)
-- [ ] UI/UX overhaul of preset system
-- [ ] Category Filters in Mod store
-
-## Instances
-
-- [ ] Import MultiMC/PrismLauncher instances
-- [ ] Migrate from other launchers
-- [ ] Package QuantumLauncher instances (in progress by @sreehari425)
-- [ ] Upgrading instances to a newer Minecraft version
-
-## Servers (disabled in GUI but can be enabled)
-
-- [x] Ability to create, delete and run Minecraft servers
-- [x] Editing basic server settings (RAM, Java, Args)
-- [ ] Editing `server.properties`
-- [ ] Editing any NBT config file
-- [ ] Plugin store
-- [ ] [playit.gg](https://playit.gg) integration
-
-### Loaders
-
-- [x] Paper
-- [ ] Spigot
-- [ ] Bukkit
-- [ ] Bungeecoord
-- [ ] The stuff from [MODS+PLUGINS.md](https://github.com/LeStegii/server-software/blob/master/java/MODS+PLUGINS.md)
-
-## Platforms
-
-(note: WIP means work-in-progress)
-
-- [x] Windows x86_64
-- [x] Linux x86_64
-- [x] macOS x86_64 (WIP)
-
-- [x] Windows Aarch64 (WIP)
-- [x] Linux Aarch64 (Almost ready)
-- [x] Linux ARM32 (WIP)
-- [x] macOS Aarch64 (Almost ready)
-
-- [x] Windows i686 (WIP)
-- [ ] Linux i686
-
-- [ ] FreeBSD (WIP)
-- [ ] Haiku
-- [ ] Solaris
-- [ ] Android (in the future)
-
-## Command-Line interface
-
-- [x] List installed instances `list-instances`, `-l`
-- [x] List versions available for download `list-available-versions`, `-a`
-- [x] Create instance from CLI
-- [x] Launch instance from CLI
-- [ ] Install loaders from CLI
-- [ ] Mod installation features from CLI
-- [ ] Preset, modpack features from CLI
-
-# MSRV (Minimum Supported Rust Version)
-
-The MSRV is Rust 1.82.0. Any deviation from this
-is considered a bug, please report if found.
-
-# Contributing/Contributors
-
-For more info, see [CONTRIBUTING.md](https://github.com/Mrmayman/quantumlauncher/tree/main/CONTRIBUTING.md)
-
-# Testing
-
-For more info, see [tests/README.md](https://github.com/Mrmayman/quantumlauncher/tree/main/tests/README.md)
+- **MSRV** (Minimum Supported Rust Version): Follows [Debian stable](https://packages.debian.org/en/stable/rustc) (currently `1.85.0`)
+  - Any mismatch is considered a bug, please report if found
+- [**Roadmap/Plans**](docs/ROADMAP.md)
+- [**Contributing**](CONTRIBUTING.md)
+- [**Test Suite**](tests/README.md)
 
 # Licensing and Credits
 
-A lot of this launcher's design, including the code for creating and launching the game,
-and installing forge, is inspired by <https://github.com/alexivkin/minecraft-launcher/>.
+- Most of this launcher is licensed under the **GNU General Public License v3**
+- Some assets have additional licensing ([more info](assets/README.md))
 
-Nearly all of this launcher is licensed under the **GNU General Public License v3**,
-however there are a few exceptions (such as GitHub actions and assets).
-Visit [the assets README](assets/README.md) for more information.
+> Many parts of the launcher were inspired by
+> <https://github.com/alexivkin/minecraft-launcher/>.
+> Massive shoutout!
 
 # Notes
 
-If you play the game in offline mode, it's at your own risk. I am not responsible for any issues caused.
-I recommend that you buy the game, but if you don't have the means, feel free to use this launcher as a last resort.
+This launcher supports offline mode, but it's at your own risk.
+I am not responsible for any issues caused.
+You should buy the game, but if you can't, feel free to use this launcher
+until you eventually get the means (like me).
+
 If anyone has any issues/complaints, just open an issue in the repo.
